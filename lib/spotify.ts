@@ -1,9 +1,11 @@
 import 'server-only'
 
 async function getAccessToken(): Promise<string> {
-  const credentials = Buffer.from(
-    `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`,
-  ).toString('base64')
+  const id = process.env.SPOTIFY_CLIENT_ID
+  const secret = process.env.SPOTIFY_CLIENT_SECRET
+  if (!id || !secret) throw new Error('SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET must be set')
+
+  const credentials = Buffer.from(`${id}:${secret}`).toString('base64')
 
   const res = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
@@ -29,9 +31,14 @@ export async function searchSpotify(
   const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } })
   if (!res.ok) throw new Error(`Spotify search error: ${res.status}`)
 
-  const data = await res.json()
-  const items: { external_urls: { spotify: string } }[] =
-    type === 'track' ? data.tracks?.items : data.albums?.items
+  type SpotifyItem = { external_urls: { spotify: string } }
+
+  const data: {
+    tracks?: { items: SpotifyItem[] }
+    albums?: { items: SpotifyItem[] }
+  } = await res.json()
+
+  const items = type === 'track' ? data.tracks?.items : data.albums?.items
 
   if (!items || items.length === 0) return null
   return items[0].external_urls.spotify

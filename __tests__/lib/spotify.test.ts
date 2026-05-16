@@ -53,4 +53,10 @@ describe('searchSpotify', () => {
     const url = await searchSpotify('nonexistentxyz', 'track')
     expect(url).toBeNull()
   })
+
+  it('throws when token fetch fails', async () => {
+    ;(fetch as jest.Mock).mockResolvedValueOnce({ ok: false, status: 401 })
+
+    await expect(searchSpotify('Giveon', 'track')).rejects.toThrow('Spotify token error')
+  })
 })
