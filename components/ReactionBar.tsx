@@ -29,8 +29,12 @@ export default function ReactionBar({ trackId, initialLikes, initialDislikes, co
   useEffect(() => {
     const stored = localStorage.getItem(VOTE_KEY)
     if (stored) {
-      const parsed = JSON.parse(stored) as { trackId: string; vote: VoteState }
-      if (parsed.trackId === trackId) setVote(parsed.vote)
+      try {
+        const parsed = JSON.parse(stored) as { trackId: string; vote: VoteState }
+        if (parsed.trackId === trackId) setVote(parsed.vote)
+      } catch {
+        localStorage.removeItem(VOTE_KEY)
+      }
     }
   }, [trackId])
 
@@ -40,34 +44,68 @@ export default function ReactionBar({ trackId, initialLikes, initialDislikes, co
   }
 
   async function handleLike() {
+    const prevVote = vote
+    const prevLikes = likes
+    const prevDislikes = dislikes
+
     if (vote === 'liked') {
       setLikes((l) => l - 1)
       saveVote(null)
-      await unlikeTrack(trackId)
+      const result = await unlikeTrack(trackId)
+      if (result.error) {
+        setLikes(prevLikes)
+        saveVote(prevVote)
+      }
     } else {
       if (vote === 'disliked') {
         setDislikes((d) => d - 1)
-        await undislikeTrack(trackId)
+        const undislikeResult = await undislikeTrack(trackId)
+        if (undislikeResult.error) {
+          setDislikes(prevDislikes)
+          return
+        }
       }
       setLikes((l) => l + 1)
       saveVote('liked')
-      await likeTrack(trackId)
+      const result = await likeTrack(trackId)
+      if (result.error) {
+        setLikes(prevLikes)
+        setDislikes(prevDislikes)
+        saveVote(prevVote)
+      }
     }
   }
 
   async function handleDislike() {
+    const prevVote = vote
+    const prevLikes = likes
+    const prevDislikes = dislikes
+
     if (vote === 'disliked') {
       setDislikes((d) => d - 1)
       saveVote(null)
-      await undislikeTrack(trackId)
+      const result = await undislikeTrack(trackId)
+      if (result.error) {
+        setDislikes(prevDislikes)
+        saveVote(prevVote)
+      }
     } else {
       if (vote === 'liked') {
         setLikes((l) => l - 1)
-        await unlikeTrack(trackId)
+        const unlikeResult = await unlikeTrack(trackId)
+        if (unlikeResult.error) {
+          setLikes(prevLikes)
+          return
+        }
       }
       setDislikes((d) => d + 1)
       saveVote('disliked')
-      await dislikeTrack(trackId)
+      const result = await dislikeTrack(trackId)
+      if (result.error) {
+        setLikes(prevLikes)
+        setDislikes(prevDislikes)
+        saveVote(prevVote)
+      }
     }
   }
 

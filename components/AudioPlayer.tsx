@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Play, Pause } from 'lucide-react'
 
 type Props = {
@@ -10,6 +10,11 @@ type Props = {
 export default function AudioPlayer({ previewUrl }: Props) {
   const [isPlaying, setIsPlaying] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
+
+  useEffect(() => {
+    audioRef.current?.pause()
+    setIsPlaying(false)
+  }, [previewUrl])
 
   function togglePlay() {
     if (!audioRef.current) return
