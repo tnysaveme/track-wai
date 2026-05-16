@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { addComment } from '@/actions/comments'
 
@@ -15,6 +15,22 @@ export default function AddCommentModal({ trackId }: Props) {
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
+  function handleClose() {
+    setOpen(false)
+    setName('')
+    setBody('')
+    setError('')
+  }
+
+  useEffect(() => {
+    if (!open) return
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') handleClose()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [open])
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSubmitting(true)
@@ -28,9 +44,7 @@ export default function AddCommentModal({ trackId }: Props) {
       return
     }
 
-    setName('')
-    setBody('')
-    setOpen(false)
+    handleClose()
     setSubmitting(false)
   }
 
@@ -46,16 +60,21 @@ export default function AddCommentModal({ trackId }: Props) {
 
       {open && (
         <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
-          <div className="bg-white p-8 w-full max-w-md relative">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
+            className="bg-white p-8 w-full max-w-md relative"
+          >
             <button
-              onClick={() => setOpen(false)}
+              onClick={handleClose}
               className="absolute top-4 right-4"
               aria-label="Close"
             >
               <X size={20} />
             </button>
 
-            <h2 className="font-bold text-lg mb-6">Add a comment</h2>
+            <h2 id="modal-title" className="font-bold text-lg mb-6">Add a comment</h2>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div>
