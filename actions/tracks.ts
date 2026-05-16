@@ -13,8 +13,10 @@ export async function searchTracks(
   query: string,
   type: 'song' | 'album',
 ): Promise<SearchTracksResult> {
+  const trimmed = query.trim().slice(0, 200)
+  if (!trimmed) return { error: 'Please enter a search term.' }
   try {
-    const results = await searchItunes(query, type)
+    const results = await searchItunes(trimmed, type)
     if (results.length === 0) return { error: 'No results found — try a different search term.' }
     return { results }
   } catch {
@@ -27,38 +29,35 @@ export async function setActiveTrack(
   itemType: 'song' | 'album',
   query: string,
 ): Promise<{ error?: string }> {
+  // Validate incoming iTunes result fields
+  if (!itunesResult.trackName?.trim() || !itunesResult.artistName?.trim()) {
+    return { error: 'Invalid track data.' }
+  }
+  if (!itunesResult.artworkUrl?.startsWith('https://')) {
+    return { error: 'Invalid artwork URL.' }
+  }
+
   const supabase = createServiceClient()
   const spotifyType = itemType === 'song' ? 'track' : 'album'
+  const fallbackSpotifyUrl = `https://open.spotify.com/search/${encodeURIComponent(`${itunesResult.artistName} ${itunesResult.trackName}`)}`
 
   let spotifyUrl: string
   try {
-    spotifyUrl =
-      (await searchSpotify(query, spotifyType)) ??
-      `https://open.spotify.com/search/${encodeURIComponent(query)}`
+    spotifyUrl = (await searchSpotify(query, spotifyType)) ?? fallbackSpotifyUrl
   } catch {
-    spotifyUrl = `https://open.spotify.com/search/${encodeURIComponent(query)}`
+    spotifyUrl = fallbackSpotifyUrl
   }
 
-  const now = new Date().toISOString()
-
-  const { error: deactivateError } = await supabase
-    .from('tracks')
-    .update({ is_active: false, deactivated_at: now })
-    .eq('is_active', true)
-
-  if (deactivateError) return { error: 'Failed to update current track.' }
-
-  const { error: insertError } = await supabase.from('tracks').insert({
-    item_type: itemType,
-    is_active: true,
-    spotify_url: spotifyUrl,
-    itunes_track_name: itunesResult.trackName,
-    itunes_artist_name: itunesResult.artistName,
-    itunes_album_art_url: itunesResult.artworkUrl,
-    itunes_preview_url: itunesResult.previewUrl,
+  const { error } = await supabase.rpc('set_active_track', {
+    p_item_type: itemType,
+    p_spotify_url: spotifyUrl,
+    p_itunes_track_name: itunesResult.trackName,
+    p_itunes_artist_name: itunesResult.artistName,
+    p_itunes_album_art_url: itunesResult.artworkUrl,
+    p_itunes_preview_url: itunesResult.previewUrl,
   })
 
-  if (insertError) return { error: 'Failed to set new track.' }
+  if (error) return { error: 'Failed to set new track.' }
 
   revalidatePath('/')
   revalidatePath('/comments')
@@ -67,22 +66,12 @@ export async function setActiveTrack(
 }
 
 export async function reactivateTrack(trackId: string): Promise<{ error?: string }> {
+  if (!trackId?.trim()) return { error: 'Invalid track ID.' }
+
   const supabase = createServiceClient()
-  const now = new Date().toISOString()
+  const { error } = await supabase.rpc('reactivate_track', { p_track_id: trackId })
 
-  const { error: deactivateError } = await supabase
-    .from('tracks')
-    .update({ is_active: false, deactivated_at: now })
-    .eq('is_active', true)
-
-  if (deactivateError) return { error: 'Failed to deactivate current track.' }
-
-  const { error: reactivateError } = await supabase
-    .from('tracks')
-    .update({ is_active: true, deactivated_at: null })
-    .eq('id', trackId)
-
-  if (reactivateError) return { error: 'Failed to reactivate track.' }
+  if (error) return { error: 'Failed to reactivate track.' }
 
   revalidatePath('/')
   revalidatePath('/comments')

@@ -19,6 +19,7 @@ export async function addComment(
 
   if (error) return { error: 'Failed to post comment.' }
 
+  revalidatePath('/')
   revalidatePath('/comments')
   return {}
 }

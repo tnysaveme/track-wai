@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation'
 export async function checkAdminPassword(formData: FormData) {
   const password = formData.get('password') as string
 
-  if (password !== process.env.ADMIN_PASSWORD) {
+  if (!process.env.ADMIN_PASSWORD || password !== process.env.ADMIN_PASSWORD) {
     return { error: 'Incorrect password.' }
   }
 
