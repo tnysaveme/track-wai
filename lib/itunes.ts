@@ -1,6 +1,7 @@
 import 'server-only'
 
 export type ItunesResult = {
+  stableId: string
   trackName: string
   artistName: string
   artworkUrl: string
@@ -9,6 +10,8 @@ export type ItunesResult = {
 }
 
 type ItunesRawResult = {
+  trackId?: number
+  collectionId?: number
   trackName?: string
   collectionName?: string
   artistName: string
@@ -27,6 +30,7 @@ export async function searchItunes(
   const data: { results: ItunesRawResult[] } = await res.json()
 
   return data.results.map((r) => ({
+    stableId: String(r.trackId ?? r.collectionId ?? r.artworkUrl100),
     trackName: r.trackName ?? r.collectionName ?? '',
     artistName: r.artistName,
     // iTunes artwork URLs use the pattern `100x100bb` — replace with 600x600 for high-res

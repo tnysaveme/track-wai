@@ -64,6 +64,7 @@ export default function TrackSearchForm() {
               setResults([])
               setSelected(null)
               setSearchError('')
+              setSuccessMsg('')
             }}
             className={`text-sm font-bold pb-0.5 ${
               itemType === t ? 'border-b-2 border-black' : 'text-gray-400'
@@ -93,9 +94,9 @@ export default function TrackSearchForm() {
 
       {results.length > 0 && (
         <div className="flex flex-col gap-2 mb-4">
-          {results.map((r, i) => (
+          {results.map((r) => (
             <button
-              key={i}
+              key={r.stableId}
               onClick={() => setSelected(r)}
               className={`flex items-center gap-3 p-2 text-left border ${
                 selected === r ? 'border-black' : 'border-transparent hover:border-gray-200'
