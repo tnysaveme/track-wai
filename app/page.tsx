@@ -28,7 +28,7 @@ export default async function HomePage() {
           <p className="text-gray-500">I&apos;ll put you on soon</p>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center min-h-[80vh] gap-6">
+        <div className="flex flex-col items-center justify-center min-h-[80vh] gap-6 pt-24">
           <AlbumArt
             src={track.itunes_album_art_url}
             alt={`${track.itunes_track_name} album art`}
