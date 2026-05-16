@@ -16,14 +16,19 @@ create table tracks (
 create table comments (
   id uuid primary key default gen_random_uuid(),
   track_id uuid not null references tracks(id) on delete cascade,
-  author_name text not null,
-  body text not null,
+  author_name text not null check (char_length(author_name) between 1 and 100),
+  body text not null check (char_length(body) between 1 and 2000),
   created_at timestamptz not null default now()
 );
 
 alter table tracks enable row level security;
 alter table comments enable row level security;
 
-create policy "tracks_public_read" on tracks for select using (true);
+-- Public can only see the active track
+create policy "tracks_public_read" on tracks
+  for select using (is_active = true);
+
 create policy "comments_public_read" on comments for select using (true);
 create policy "comments_public_insert" on comments for insert with check (true);
+
+create index if not exists comments_track_id_idx on comments(track_id);
