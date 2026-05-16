@@ -9,6 +9,8 @@ export async function addComment(
   body: string,
 ): Promise<{ error?: string }> {
   if (!authorName.trim() || !body.trim()) return { error: 'Name and comment are required.' }
+  if (authorName.trim().length > 100) return { error: 'Name must be 100 characters or fewer.' }
+  if (body.trim().length > 2000) return { error: 'Comment must be 2000 characters or fewer.' }
 
   const supabase = createServiceClient()
   const { error } = await supabase.from('comments').insert({

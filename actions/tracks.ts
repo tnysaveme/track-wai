@@ -1,9 +1,15 @@
 'use server'
 
+import { cookies } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { createServiceClient } from '@/lib/supabase/server'
 import { searchItunes, type ItunesResult } from '@/lib/itunes'
 import { searchSpotify } from '@/lib/spotify'
+
+async function requireAdminSession(): Promise<boolean> {
+  const cookieStore = await cookies()
+  return cookieStore.get('admin_session')?.value === 'authenticated'
+}
 
 export type SearchTracksResult =
   | { results: ItunesResult[]; error?: never }
@@ -29,6 +35,8 @@ export async function setActiveTrack(
   itemType: 'song' | 'album',
   query: string,
 ): Promise<{ error?: string }> {
+  if (!(await requireAdminSession())) return { error: 'Unauthorized.' }
+
   // Validate incoming iTunes result fields
   if (!itunesResult.trackName?.trim() || !itunesResult.artistName?.trim()) {
     return { error: 'Invalid track data.' }
@@ -66,6 +74,7 @@ export async function setActiveTrack(
 }
 
 export async function reactivateTrack(trackId: string): Promise<{ error?: string }> {
+  if (!(await requireAdminSession())) return { error: 'Unauthorized.' }
   if (!trackId?.trim()) return { error: 'Invalid track ID.' }
 
   const supabase = createServiceClient()

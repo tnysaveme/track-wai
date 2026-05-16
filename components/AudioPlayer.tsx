@@ -21,7 +21,7 @@ export default function AudioPlayer({ previewUrl }: Props) {
     if (isPlaying) {
       audioRef.current.pause()
     } else {
-      audioRef.current.play()
+      audioRef.current.play().catch(() => setIsPlaying(false))
     }
     setIsPlaying(!isPlaying)
   }
