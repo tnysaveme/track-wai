@@ -50,11 +50,11 @@ export default async function HomePage() {
           </p>
 
           {track.item_type === 'song' && track.itunes_preview_url && (
-            <AudioPlayer key={track.id} previewUrl={track.itunes_preview_url} />
+            <AudioPlayer key={`${track.id}-player`} previewUrl={track.itunes_preview_url} />
           )}
 
           <ReactionBar
-            key={track.id}
+            key={`${track.id}-reactions`}
             trackId={track.id}
             initialLikes={track.likes}
             initialDislikes={track.dislikes}
