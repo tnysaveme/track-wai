@@ -2,6 +2,7 @@ import { createServiceClient } from '@/lib/supabase/server'
 import AlbumArt from '@/components/AlbumArt'
 import AudioPlayer from '@/components/AudioPlayer'
 import ReactionBar from '@/components/ReactionBar'
+import RealtimeTrackRefresh from '@/components/RealtimeTrackRefresh'
 
 export default async function HomePage() {
   const supabase = createServiceClient()
@@ -29,6 +30,8 @@ export default async function HomePage() {
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center min-h-[80vh] gap-6 pt-24">
+          <RealtimeTrackRefresh trackId={track.id} />
+
           <AlbumArt
             src={track.itunes_album_art_url}
             alt={`${track.itunes_track_name} album art`}
