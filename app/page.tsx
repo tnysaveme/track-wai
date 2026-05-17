@@ -22,7 +22,7 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-screen bg-white p-8">
-      <h1 className="text-xl font-bold">Track Wai</h1>
+      <h1 className="text-xl font-bold">{track?.item_type === 'album' ? 'Album Wai' : 'Track Wai'}</h1>
 
       {!track ? (
         <div className="flex items-center justify-center min-h-[80vh]">
