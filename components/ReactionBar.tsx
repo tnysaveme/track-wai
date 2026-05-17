@@ -25,15 +25,6 @@ export default function ReactionBar({ trackId, initialLikes, initialDislikes, co
   const [vote, setVote] = useState<VoteState>(null)
 
   useEffect(() => {
-    setLikes(initialLikes)
-    setDislikes(initialDislikes)
-  }, [initialLikes, initialDislikes])
-
-  useEffect(() => {
-    setCommentCount(initialCommentCount)
-  }, [initialCommentCount])
-
-  useEffect(() => {
     const stored = localStorage.getItem(VOTE_KEY)
     if (stored) {
       try {
