@@ -5,6 +5,7 @@ import { Heart, MessageCircle, ThumbsDown } from 'lucide-react'
 import Link from 'next/link'
 import { likeTrack, unlikeTrack, dislikeTrack, undislikeTrack } from '@/actions/reactions'
 import { supabaseBrowser } from '@/lib/supabase/client'
+import NumberDisplay from '@/components/NumberDisplay'
 
 type VoteState = 'liked' | 'disliked' | null
 
@@ -157,17 +158,17 @@ export default function ReactionBar({ trackId, initialLikes, initialDislikes, co
     <div className="flex gap-12 items-start">
       <button onClick={handleLike} className="flex flex-col items-center gap-1" aria-label="Like">
         <Heart size={24} fill={vote === 'liked' ? 'red' : 'none'} stroke={vote === 'liked' ? 'red' : 'currentColor'} strokeWidth={vote === 'liked' ? 0 : 2} />
-        <span className="text-sm">{likes}</span>
+        <NumberDisplay value={likes} className="text-sm" />
       </button>
 
       <Link href="/comments" className="flex flex-col items-center gap-1" aria-label="Comments">
         <MessageCircle size={24} />
-        <span className="text-sm">{commentCount}</span>
+        <NumberDisplay value={commentCount} className="text-sm" />
       </Link>
 
       <button onClick={handleDislike} className="flex flex-col items-center gap-1" aria-label="Dislike">
         <ThumbsDown size={24} fill={vote === 'disliked' ? 'black' : 'none'} strokeWidth={vote === 'disliked' ? 0 : 2} />
-        <span className="text-sm">{dislikes}</span>
+        <NumberDisplay value={dislikes} className="text-sm" />
       </button>
     </div>
   )
