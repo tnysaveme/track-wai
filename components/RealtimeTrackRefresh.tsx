@@ -22,9 +22,12 @@ export default function RealtimeTrackRefresh({ trackId }: Props) {
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'tracks' },
-        () => {
-          routerRef.current.refresh()
-        },
+        () => { routerRef.current.refresh() },
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'tracks' },
+        () => { routerRef.current.refresh() },
       )
       .subscribe()
 
