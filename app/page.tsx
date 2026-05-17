@@ -3,6 +3,7 @@ import AlbumArt from '@/components/AlbumArt'
 import AudioPlayer from '@/components/AudioPlayer'
 import ReactionBar from '@/components/ReactionBar'
 import RealtimeTrackRefresh from '@/components/RealtimeTrackRefresh'
+import InfoModal from '@/components/InfoModal'
 
 export default async function HomePage() {
   const supabase = createServiceClient()
@@ -22,7 +23,10 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-screen bg-white p-8">
-      <h1 className="text-xl font-bold">{track?.item_type === 'album' ? 'Album Wai' : 'Track Wai'}</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-bold">{track?.item_type === 'album' ? 'Album Wai' : 'Track Wai'}</h1>
+        <InfoModal />
+      </div>
 
       {!track ? (
         <div className="flex items-center justify-center min-h-[80vh]">
