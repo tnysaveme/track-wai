@@ -19,10 +19,6 @@ export default function CommentsList({ trackId, initialComments }: Props) {
   const [comments, setComments] = useState<Comment[]>(initialComments)
 
   useEffect(() => {
-    setComments(initialComments)
-  }, [initialComments])
-
-  useEffect(() => {
     const channel = supabaseBrowser
       .channel(`comments-list-${trackId}`)
       .on(
