@@ -138,16 +138,13 @@
 
 /* ─── Modal ─────────────────────────────────────────────────────── */
 /*
- * Using @keyframes instead of transition:
- * - @keyframes are pre-planned by the browser; no need to capture a
- *   "from" state before the class change, which races on iOS Safari
- * - No will-change: it forces GPU layer promotion and causes iOS to
- *   repaint fixed elements (the header/footer flash)
- * - translate3d(0,y,0) composites on the GPU without that side-effect
+ * Backdrop appears/disappears instantly — no fade.
+ * Fading the backdrop causes iOS Safari to lag updating the status bar
+ * and home indicator because the system chrome tracks the page background
+ * colour asynchronously and can't keep up with a gradual opacity change.
+ * The panel animation (slide + fade) is what the eye follows, so the
+ * instant backdrop switch is imperceptible in practice.
  */
-@keyframes modal-backdrop-in  { from { opacity: 0 } to { opacity: 1 } }
-@keyframes modal-backdrop-out { from { opacity: 1 } to { opacity: 0 } }
-
 @keyframes modal-panel-in {
   from { opacity: 0; transform: translate3d(0, 14px, 0); }
   to   { opacity: 1; transform: translate3d(0, 0,    0); }
@@ -164,11 +161,11 @@
   touch-action: none;
 }
 .modal-backdrop.is-open {
-  animation: modal-backdrop-in 220ms ease-out forwards;
+  opacity: 1;
   pointer-events: auto;
 }
 .modal-backdrop.is-closing {
-  animation: modal-backdrop-out 180ms ease-in forwards;
+  opacity: 0;
   pointer-events: none;
 }
 
@@ -181,10 +178,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .modal-backdrop.is-open    { animation: none; opacity: 1; }
-  .modal-backdrop.is-closing { animation: none; opacity: 0; }
-  .modal-panel.is-open       { animation: none; opacity: 1; }
-  .modal-panel.is-closing    { animation: none; opacity: 0; }
+  .modal-panel.is-open    { animation: none; opacity: 1; }
+  .modal-panel.is-closing { animation: none; opacity: 0; }
 }
 
 /* ─── New comment slide-in ──────────────────────────────────────── */
