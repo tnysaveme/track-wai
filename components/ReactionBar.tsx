@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Heart, MessageCircle, ThumbsDown } from 'lucide-react'
 import Link from 'next/link'
 import { likeTrack, unlikeTrack, dislikeTrack, undislikeTrack } from '@/actions/reactions'
+import { supabaseBrowser } from '@/lib/supabase/client'
 
 type VoteState = 'liked' | 'disliked' | null
 
@@ -16,15 +17,20 @@ type Props = {
 
 const VOTE_KEY = 'trackwai_vote'
 
-export default function ReactionBar({ trackId, initialLikes, initialDislikes, commentCount }: Props) {
+export default function ReactionBar({ trackId, initialLikes, initialDislikes, commentCount: initialCommentCount }: Props) {
   const [likes, setLikes] = useState(initialLikes)
   const [dislikes, setDislikes] = useState(initialDislikes)
+  const [commentCount, setCommentCount] = useState(initialCommentCount)
   const [vote, setVote] = useState<VoteState>(null)
 
   useEffect(() => {
     setLikes(initialLikes)
     setDislikes(initialDislikes)
   }, [initialLikes, initialDislikes])
+
+  useEffect(() => {
+    setCommentCount(initialCommentCount)
+  }, [initialCommentCount])
 
   useEffect(() => {
     const stored = localStorage.getItem(VOTE_KEY)
@@ -35,6 +41,44 @@ export default function ReactionBar({ trackId, initialLikes, initialDislikes, co
       } catch {
         localStorage.removeItem(VOTE_KEY)
       }
+    }
+  }, [trackId])
+
+  // Realtime: sync likes/dislikes from DB
+  useEffect(() => {
+    const channel = supabaseBrowser
+      .channel(`track-reactions-${trackId}`)
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'tracks', filter: `id=eq.${trackId}` },
+        (payload) => {
+          const updated = payload.new as { likes: number; dislikes: number }
+          setLikes(updated.likes)
+          setDislikes(updated.dislikes)
+        },
+      )
+      .subscribe()
+
+    return () => {
+      supabaseBrowser.removeChannel(channel)
+    }
+  }, [trackId])
+
+  // Realtime: increment comment count on new comment
+  useEffect(() => {
+    const channel = supabaseBrowser
+      .channel(`track-comments-count-${trackId}`)
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'comments', filter: `track_id=eq.${trackId}` },
+        () => {
+          setCommentCount((c) => c + 1)
+        },
+      )
+      .subscribe()
+
+    return () => {
+      supabaseBrowser.removeChannel(channel)
     }
   }, [trackId])
 
