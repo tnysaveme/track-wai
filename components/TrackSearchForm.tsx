@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import { toast } from 'sonner'
 import { searchTracks, setActiveTrack } from '@/actions/tracks'
 import type { ItunesResult } from '@/lib/itunes'
 
@@ -13,13 +14,11 @@ export default function TrackSearchForm() {
   const [searchError, setSearchError] = useState('')
   const [searching, setSearching] = useState(false)
   const [confirming, setConfirming] = useState(false)
-  const [successMsg, setSuccessMsg] = useState('')
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault()
     setSearching(true)
     setSearchError('')
-    setSuccessMsg('')
     setResults([])
     setSelected(null)
 
@@ -41,9 +40,9 @@ export default function TrackSearchForm() {
     const result = await setActiveTrack(selected, itemType, query)
 
     if (result.error) {
-      setSearchError(result.error)
+      toast.error(result.error)
     } else {
-      setSuccessMsg(`Now featuring: ${selected.artistName} — ${selected.trackName}`)
+      toast.success(`Now featuring: ${selected.artistName} — ${selected.trackName}`)
       setQuery('')
       setResults([])
       setSelected(null)
@@ -64,7 +63,6 @@ export default function TrackSearchForm() {
               setResults([])
               setSelected(null)
               setSearchError('')
-              setSuccessMsg('')
             }}
             className={`text-sm font-bold pb-0.5 ${
               itemType === t ? 'border-b-2 border-black' : 'text-gray-400'
@@ -90,7 +88,6 @@ export default function TrackSearchForm() {
       </form>
 
       {searchError && <p className="text-sm text-red-600 mb-3">{searchError}</p>}
-      {successMsg && <p className="text-sm text-green-700 mb-3">{successMsg}</p>}
 
       {results.length > 0 && (
         <div className="flex flex-col gap-2 mb-4">

@@ -112,7 +112,7 @@ export default function ReactionBar({ trackId, initialLikes, initialDislikes, co
   return (
     <div className="flex gap-12 items-start">
       <button onClick={handleLike} className="flex flex-col items-center gap-1" aria-label="Like">
-        <Heart size={24} fill={vote === 'liked' ? 'black' : 'none'} strokeWidth={vote === 'liked' ? 0 : 2} />
+        <Heart size={24} fill={vote === 'liked' ? 'red' : 'none'} stroke={vote === 'liked' ? 'red' : 'currentColor'} strokeWidth={vote === 'liked' ? 0 : 2} />
         <span className="text-sm">{likes}</span>
       </button>
 

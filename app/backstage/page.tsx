@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { createServiceClient } from '@/lib/supabase/server'
 import AdminPasswordGate from '@/components/AdminPasswordGate'
 import TrackSearchForm from '@/components/TrackSearchForm'
-import { reactivateTrack, deleteTrack } from '@/actions/tracks'
+import TrackHistoryActions from '@/components/TrackHistoryActions'
 
 export default async function BackstagePage() {
   const cookieStore = await cookies()
@@ -90,28 +90,10 @@ export default async function BackstagePage() {
                       {track.likes} likes · {track.dislikes} dislikes · {commentCount} comments · {dateStr}
                     </p>
                   </div>
-                  <div className="flex gap-4">
-                    <form
-                      action={async () => {
-                        'use server'
-                        await reactivateTrack(track.id)
-                      }}
-                    >
-                      <button type="submit" className="text-sm font-bold">
-                        Reactivate
-                      </button>
-                    </form>
-                    <form
-                      action={async () => {
-                        'use server'
-                        await deleteTrack(track.id)
-                      }}
-                    >
-                      <button type="submit" className="text-sm text-red-500">
-                        Delete
-                      </button>
-                    </form>
-                  </div>
+                  <TrackHistoryActions
+                    trackId={track.id}
+                    trackName={track.itunes_track_name}
+                  />
                 </div>
               )
             })}

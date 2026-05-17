@@ -30,7 +30,7 @@ export default function AudioPlayer({ previewUrl }: Props) {
     <>
       <audio ref={audioRef} src={previewUrl} onEnded={() => setIsPlaying(false)} />
       <button onClick={togglePlay} aria-label={isPlaying ? 'Pause' : 'Play'}>
-        {isPlaying ? <Pause size={28} /> : <Play size={28} />}
+        {isPlaying ? <Pause size={28} fill="black" strokeWidth={0} /> : <Play size={28} fill="black" strokeWidth={0} />}
       </button>
     </>
   )

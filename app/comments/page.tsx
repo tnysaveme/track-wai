@@ -24,11 +24,11 @@ export default async function CommentsPage() {
 
   return (
     <main className="min-h-screen bg-white p-8">
-      <div className="flex items-center gap-3 mb-10">
+      <div className="flex items-center justify-between mb-10">
+        <h1 className="text-xl font-bold">Comments</h1>
         <Link href="/" aria-label="Back to home">
           <ArrowLeft size={20} />
         </Link>
-        <h1 className="text-xl font-bold">Comments</h1>
       </div>
 
       {comments.length === 0 ? (
@@ -36,7 +36,7 @@ export default async function CommentsPage() {
           <p className="text-gray-500">Whatcha say?</p>
         </div>
       ) : (
-        <div className="flex flex-col gap-6 max-w-lg">
+        <div className="flex flex-col gap-6 max-w-lg ml-[15%]">
           {comments.map((comment) => (
             <div key={comment.id}>
               <p className="text-sm font-bold">{comment.author_name}</p>
