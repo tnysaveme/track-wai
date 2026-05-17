@@ -41,41 +41,44 @@ export default function ActiveTrackActions({ trackId, trackName }: Props) {
   }
 
   return (
-    <div className="flex gap-4 mt-3">
-      <button
-        onClick={handleDeactivate}
-        disabled={loading}
-        className="text-sm font-bold disabled:opacity-50 transition-opacity hover:opacity-60 active:scale-95"
-      >
-        Deactivate
-      </button>
-
+    <div className="mt-4">
       {confirmingDelete ? (
-        <div className="flex gap-3 items-center">
-          <span className="text-sm text-red-500">Are you sure?</span>
+        <div className="flex flex-col gap-2">
+          <span className="text-sm text-red-500">Delete this track? This can&apos;t be undone.</span>
+          <div className="flex gap-4">
+            <button
+              onClick={handleDelete}
+              disabled={loading}
+              className="text-sm font-bold text-red-500 disabled:opacity-50 transition-opacity hover:opacity-60 active:scale-95 py-2"
+            >
+              Yes, delete
+            </button>
+            <button
+              onClick={() => setConfirmingDelete(false)}
+              disabled={loading}
+              className="text-sm text-gray-400 disabled:opacity-50 transition-opacity hover:opacity-60 py-2"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex gap-4">
+          <button
+            onClick={handleDeactivate}
+            disabled={loading}
+            className="text-sm font-bold disabled:opacity-50 transition-opacity hover:opacity-60 active:scale-95 py-2"
+          >
+            Deactivate
+          </button>
           <button
             onClick={handleDelete}
             disabled={loading}
-            className="text-sm font-bold text-red-500 disabled:opacity-50 transition-opacity hover:opacity-60 active:scale-95"
+            className="text-sm text-red-500 disabled:opacity-50 transition-opacity hover:opacity-60 active:scale-95 py-2"
           >
-            Yes, delete
-          </button>
-          <button
-            onClick={() => setConfirmingDelete(false)}
-            disabled={loading}
-            className="text-sm text-gray-400 disabled:opacity-50 transition-opacity hover:opacity-60"
-          >
-            Cancel
+            Delete
           </button>
         </div>
-      ) : (
-        <button
-          onClick={handleDelete}
-          disabled={loading}
-          className="text-sm text-red-500 disabled:opacity-50 transition-opacity hover:opacity-60 active:scale-95"
-        >
-          Delete
-        </button>
       )}
     </div>
   )

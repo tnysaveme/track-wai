@@ -22,12 +22,12 @@ export default function AdminPasswordGate() {
           name="password"
           required
           autoComplete="current-password"
-          className="border-b border-black outline-none py-1 text-sm"
+          className="border-b border-black outline-none py-2 text-base"
           placeholder="Password"
           autoFocus
         />
         {error && <p className="text-sm text-red-600">{error}</p>}
-        <button type="submit" className="font-bold text-sm self-start">
+        <button type="submit" className="font-bold text-base self-start py-1">
           Enter
         </button>
       </form>

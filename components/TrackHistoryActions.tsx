@@ -28,11 +28,11 @@ export default function TrackHistoryActions({ trackId, trackName }: Props) {
   }
 
   return (
-    <div className="flex gap-4">
-      <button onClick={handleReactivate} className="text-sm font-bold transition-opacity hover:opacity-60 active:scale-95">
+    <div className="flex gap-4 mt-1">
+      <button onClick={handleReactivate} className="text-sm font-bold transition-opacity hover:opacity-60 active:scale-95 py-2">
         Reactivate
       </button>
-      <button onClick={handleDelete} className="text-sm text-red-500 transition-opacity hover:opacity-60 active:scale-95">
+      <button onClick={handleDelete} className="text-sm text-red-500 transition-opacity hover:opacity-60 active:scale-95 py-2">
         Delete
       </button>
     </div>
