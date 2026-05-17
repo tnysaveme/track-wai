@@ -51,8 +51,7 @@ export async function addComment(
     return { error: 'Failed to post comment.' }
   }
 
-  // Only revalidate the comments page — the live comment count on the homepage
-  // is already kept in sync by the Realtime subscription in ReactionBar.
+  revalidatePath('/')
   revalidatePath('/comments')
   return {}
 }

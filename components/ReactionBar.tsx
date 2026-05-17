@@ -59,15 +59,24 @@ export default function ReactionBar({ trackId, initialLikes, initialDislikes, co
     }
   }, [trackId])
 
-  // Realtime: increment comment count on new comment
+  // Realtime: increment comment count on new comment.
+  // We intentionally omit the server-side `filter` option here: Supabase
+  // Realtime can only apply server-side filters on non-PK columns when the
+  // table has REPLICA IDENTITY FULL, which comments does not. Without it the
+  // filtered subscription silently receives no events. Instead we subscribe to
+  // ALL comment inserts and check track_id client-side — payload.new always
+  // contains the full row for INSERT events regardless of replica identity.
   useEffect(() => {
     const channel = supabaseBrowser
       .channel(`track-comments-count-${trackId}`)
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'comments', filter: `track_id=eq.${trackId}` },
-        () => {
-          setCommentCount((c) => c + 1)
+        { event: 'INSERT', schema: 'public', table: 'comments' },
+        (payload) => {
+          const row = payload.new as { track_id: string }
+          if (row.track_id === trackId) {
+            setCommentCount((c) => c + 1)
+          }
         },
       )
       .subscribe()
