@@ -11,9 +11,9 @@ export default function InfoModal() {
 
   function openModal() {
     setIsVisible(true)
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => setIsOpen(true))
-    })
+    // setTimeout is more reliable than double-rAF on iOS Safari for
+    // triggering CSS transitions after the element enters the DOM
+    setTimeout(() => setIsOpen(true), 16)
   }
 
   function closeModal() {
