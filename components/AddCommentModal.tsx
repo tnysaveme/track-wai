@@ -26,13 +26,13 @@ export default function AddCommentModal({ trackId }: Props) {
 
   function closeModal() {
     if (modal !== 'open') return
+    setThemeColorForModal(false)
     setModal('closing')
     setTimeout(() => {
       setModal('closed')
       setName('')
       setBody('')
       setError('')
-      setThemeColorForModal(false)
     }, CLOSE_DURATION)
   }
 

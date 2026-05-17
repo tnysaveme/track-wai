@@ -17,10 +17,10 @@ export default function InfoModal() {
 
   function closeModal() {
     if (modal !== 'open') return
+    setThemeColorForModal(false)
     setModal('closing')
     setTimeout(() => {
       setModal('closed')
-      setThemeColorForModal(false)
     }, CLOSE_DURATION)
   }
 
