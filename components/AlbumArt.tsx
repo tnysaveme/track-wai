@@ -85,7 +85,7 @@ export default function AlbumArt({ src, alt, spotifyUrl, appleMusicUrl }: Props)
   }
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-[260px] sm:max-w-[375px]">
+    <div ref={containerRef} className="relative w-full max-w-[375px]">
       <button
         onClick={handleImageClick}
         className="block w-full transition-transform duration-300 ease-out hover:scale-[1.02] active:scale-[0.99]"
@@ -98,7 +98,7 @@ export default function AlbumArt({ src, alt, spotifyUrl, appleMusicUrl }: Props)
           width={375}
           height={375}
           className="w-full h-auto object-cover"
-          sizes="(max-width: 640px) 260px, 375px"
+          sizes="(max-width: 440px) calc(100vw - 4rem), 375px"
           priority
         />
       </button>
