@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { Info, X } from 'lucide-react'
-import { setThemeColorForModal } from '@/lib/theme-color'
 
 type ModalState = 'closed' | 'open' | 'closing'
 const CLOSE_DURATION = 180 // ms — matches modal-panel-out duration
@@ -11,13 +10,11 @@ export default function InfoModal() {
   const [modal, setModal] = useState<ModalState>('closed')
 
   function openModal() {
-    setThemeColorForModal(true)
     setModal('open')
   }
 
   function closeModal() {
     if (modal !== 'open') return
-    setThemeColorForModal(false)
     setModal('closing')
     setTimeout(() => {
       setModal('closed')
