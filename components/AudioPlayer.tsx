@@ -38,7 +38,6 @@ export default function AudioPlayer({ previewUrl }: Props) {
               filter: isPlaying ? 'blur(var(--icon-swap-blur))' : 'blur(0px)',
               transform: isPlaying ? 'scale(var(--icon-swap-start-scale))' : 'scale(1)',
               transition: 'opacity var(--icon-swap-dur) var(--icon-swap-ease), filter var(--icon-swap-dur) var(--icon-swap-ease), transform var(--icon-swap-dur) var(--icon-swap-ease)',
-              willChange: 'opacity, filter, transform',
             }}
           >
             <Play size={28} fill="black" strokeWidth={0} />
@@ -50,7 +49,6 @@ export default function AudioPlayer({ previewUrl }: Props) {
               filter: isPlaying ? 'blur(0px)' : 'blur(var(--icon-swap-blur))',
               transform: isPlaying ? 'scale(1)' : 'scale(var(--icon-swap-start-scale))',
               transition: 'opacity var(--icon-swap-dur) var(--icon-swap-ease), filter var(--icon-swap-dur) var(--icon-swap-ease), transform var(--icon-swap-dur) var(--icon-swap-ease)',
-              willChange: 'opacity, filter, transform',
             }}
           >
             <Pause size={28} fill="black" strokeWidth={0} />

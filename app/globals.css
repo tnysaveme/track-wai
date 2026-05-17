@@ -242,10 +242,18 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
+  /*
+   * overflow-x: clip on both html and body is the strongest guard
+   * against iOS Safari detecting horizontal overflow and zooming out.
+   * Unlike overflow-x: hidden, clip does not create a new BFC so
+   * position: fixed elements continue to work correctly.
+   */
   html {
     @apply font-sans;
+    overflow-x: clip;
+  }
+  body {
+    @apply bg-background text-foreground;
+    overflow-x: clip;
   }
 }

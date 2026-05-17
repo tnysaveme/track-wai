@@ -5,13 +5,21 @@ import { Toaster } from '@/components/ui/sonner'
 
 const figtree = Figtree({
   subsets: ['latin'],
-  display: 'swap',
+  // 'optional' never swaps — font only renders if already cached.
+  // This eliminates the text-metrics shift that causes iOS Safari to
+  // briefly zoom out and snap back on initial load.
+  display: 'optional',
   variable: '--font-figtree',
+  preload: true,
 })
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  minimumScale: 1,
+  // viewportFit: 'cover' lets content bleed into notch/home-indicator
+  // safe areas — we handle insets ourselves with env(safe-area-inset-*)
+  viewportFit: 'cover',
 }
 
 export const metadata: Metadata = {
