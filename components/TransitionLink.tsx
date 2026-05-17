@@ -14,7 +14,6 @@ export default function TransitionLink({ href, children, ...props }: Props) {
       router.push(href)
       return
     }
-    // @ts-expect-error — View Transitions API not yet in lib.dom.d.ts for all targets
     document.startViewTransition(() => {
       startTransition(() => {
         router.push(href)
