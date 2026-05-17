@@ -85,7 +85,14 @@ export default function AlbumArt({ src, alt, spotifyUrl, appleMusicUrl }: Props)
   }
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-[375px]">
+    <div
+      ref={containerRef}
+      className="relative w-full max-w-[375px] overflow-hidden"
+      style={{
+        boxShadow: showPicker ? 'inset 0 0 0 1px black' : 'inset 0 0 0 0px black',
+        transition: 'box-shadow 380ms cubic-bezier(0.76, 0, 0.24, 1)',
+      }}
+    >
       <button
         onClick={handleImageClick}
         className="block w-full transition-transform duration-300 ease-out hover:scale-[1.02] active:scale-[0.99]"
@@ -103,9 +110,9 @@ export default function AlbumArt({ src, alt, spotifyUrl, appleMusicUrl }: Props)
         />
       </button>
 
-      {/* Service picker strip — clips in from the top edge of the strip downward */}
+      {/* Service picker strip — clips upward from the bottom of the image */}
       <div
-        className="absolute inset-x-0 bottom-0 bg-white border-t border-black overflow-hidden"
+        className="absolute inset-x-0 bottom-0 bg-white border-t border-black"
         style={{
           clipPath: showPicker ? 'inset(0 0 0% 0)' : 'inset(0 0 100% 0)',
           transition: 'clip-path 380ms cubic-bezier(0.76, 0, 0.24, 1)',
@@ -119,7 +126,7 @@ export default function AlbumArt({ src, alt, spotifyUrl, appleMusicUrl }: Props)
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => setShowPicker(false)}
-            className="group flex-1 flex items-center justify-center gap-2.5 py-4
+            className="flex-1 flex items-center justify-center gap-2.5 py-4
               text-[10px] font-bold tracking-[0.18em] uppercase
               transition-colors duration-150 hover:bg-black hover:text-white"
           >
@@ -132,7 +139,7 @@ export default function AlbumArt({ src, alt, spotifyUrl, appleMusicUrl }: Props)
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setShowPicker(false)}
-              className="group flex-1 flex items-center justify-center gap-2.5 py-4
+              className="flex-1 flex items-center justify-center gap-2.5 py-4
                 text-[10px] font-bold tracking-[0.18em] uppercase
                 transition-colors duration-150 hover:bg-black hover:text-white"
             >
