@@ -111,14 +111,20 @@ export default function AddCommentModal({ trackId }: Props) {
               </div>
 
               <div>
-                <label className="block text-sm font-bold mb-1" htmlFor="body">
-                  Comment
-                </label>
+                <div className="flex justify-between items-baseline mb-1">
+                  <label className="block text-sm font-bold" htmlFor="body">
+                    Comment
+                  </label>
+                  <span className={`text-xs tabular-nums ${body.length > 180 ? 'text-red-500' : 'text-gray-400'}`}>
+                    {body.length}/200
+                  </span>
+                </div>
                 <textarea
                   id="body"
                   value={body}
                   onChange={(e) => setBody(e.target.value)}
                   required
+                  maxLength={200}
                   rows={3}
                   className="w-full border-b border-black outline-none py-1 text-sm resize-none"
                   placeholder="What do you think?"
