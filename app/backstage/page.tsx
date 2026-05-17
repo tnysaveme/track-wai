@@ -4,6 +4,7 @@ import { createServiceClient } from '@/lib/supabase/server'
 import AdminPasswordGate from '@/components/AdminPasswordGate'
 import TrackSearchForm from '@/components/TrackSearchForm'
 import TrackHistoryActions from '@/components/TrackHistoryActions'
+import ActiveTrackActions from '@/components/ActiveTrackActions'
 
 export default async function BackstagePage() {
   const cookieStore = await cookies()
@@ -34,20 +35,26 @@ export default async function BackstagePage() {
       <section className="mb-10">
         <h2 className="font-bold text-lg mb-4">Now Playing</h2>
         {activeTrack ? (
-          <div className="flex items-center gap-4">
-            <Image
-              src={activeTrack.itunes_album_art_url}
-              alt={activeTrack.itunes_track_name}
-              width={64}
-              height={64}
-              className="object-cover shrink-0"
-              sizes="64px"
-            />
-            <div>
-              <p className="font-bold text-sm">{activeTrack.itunes_artist_name}</p>
-              <p className="text-sm">{activeTrack.itunes_track_name}</p>
-              <span className="text-xs text-gray-400 capitalize">{activeTrack.item_type}</span>
+          <div>
+            <div className="flex items-center gap-4">
+              <Image
+                src={activeTrack.itunes_album_art_url}
+                alt={activeTrack.itunes_track_name}
+                width={64}
+                height={64}
+                className="object-cover shrink-0"
+                sizes="64px"
+              />
+              <div>
+                <p className="font-bold text-sm">{activeTrack.itunes_artist_name}</p>
+                <p className="text-sm">{activeTrack.itunes_track_name}</p>
+                <span className="text-xs text-gray-400 capitalize">{activeTrack.item_type}</span>
+              </div>
             </div>
+            <ActiveTrackActions
+              trackId={activeTrack.id}
+              trackName={activeTrack.itunes_track_name}
+            />
           </div>
         ) : (
           <p className="text-sm text-gray-500">No track set yet.</p>
