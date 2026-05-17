@@ -2,11 +2,12 @@
 
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { env } from '@/lib/env'
 
 export async function checkAdminPassword(formData: FormData) {
   const password = formData.get('password') as string
 
-  if (!process.env.ADMIN_PASSWORD || password !== process.env.ADMIN_PASSWORD) {
+  if (password !== env.ADMIN_PASSWORD) {
     return { error: 'Incorrect password.' }
   }
 

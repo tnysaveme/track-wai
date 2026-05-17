@@ -13,6 +13,17 @@ export async function addComment(
   if (body.trim().length > 200) return { error: 'Comment must be 200 characters or fewer.' }
 
   const supabase = createServiceClient()
+
+  // Verify the track exists and is currently active before accepting the comment
+  const { data: track, error: trackError } = await supabase
+    .from('tracks')
+    .select('id')
+    .eq('id', trackId)
+    .eq('is_active', true)
+    .maybeSingle()
+
+  if (trackError || !track) return { error: 'This track is no longer active.' }
+
   const { error } = await supabase.from('comments').insert({
     track_id: trackId,
     author_name: authorName.trim(),

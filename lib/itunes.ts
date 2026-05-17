@@ -27,7 +27,7 @@ export async function searchItunes(
   entity: 'song' | 'album',
 ): Promise<ItunesResult[]> {
   const url = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=${entity}&limit=5`
-  const res = await fetch(url)
+  const res = await fetch(url, { signal: AbortSignal.timeout(5000) })
   if (!res.ok) throw new Error(`iTunes API error: ${res.status}`)
 
   const data: { results: ItunesRawResult[] } = await res.json()

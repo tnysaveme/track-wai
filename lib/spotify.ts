@@ -14,6 +14,7 @@ async function getAccessToken(): Promise<string> {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: 'grant_type=client_credentials',
+    signal: AbortSignal.timeout(5000),
   })
 
   if (!res.ok) throw new Error(`Spotify token error: ${res.status}`)
@@ -28,7 +29,10 @@ export async function searchSpotify(
   const token = await getAccessToken()
   const url = `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=${type}&limit=1`
 
-  const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } })
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+    signal: AbortSignal.timeout(5000),
+  })
   if (!res.ok) throw new Error(`Spotify search error: ${res.status}`)
 
   type SpotifyItem = { external_urls: { spotify: string } }
