@@ -81,7 +81,8 @@ export default function AddCommentModal({ trackId }: Props) {
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-title"
-            className={`modal-panel bg-white p-8 w-full max-w-md relative${isOpen ? ' is-open' : ''}`}
+            className={`modal-panel bg-white p-8 mx-4 sm:mx-0 w-full max-w-md relative${isOpen ? ' is-open' : ''}`}
+            style={{ paddingBottom: 'max(2rem, calc(2rem + env(safe-area-inset-bottom)))' }}
           >
             <button
               onClick={closeModal}

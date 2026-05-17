@@ -47,7 +47,7 @@ export default function CommentsList({ trackId, initialComments }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-6 max-w-lg ml-[15%]">
+    <div className="flex flex-col gap-6 max-w-lg ml-0 sm:ml-[15%] pb-24">
       {comments.map((comment) => (
         <div
           key={comment.id}

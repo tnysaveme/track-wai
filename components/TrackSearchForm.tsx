@@ -100,7 +100,7 @@ export default function TrackSearchForm() {
               }`}
               style={{ animationDelay: `${i * 40}ms` }}
             >
-              <Image src={r.artworkUrl} alt={r.trackName} width={48} height={48} className="object-cover" />
+              <Image src={r.artworkUrl} alt={r.trackName} width={48} height={48} className="object-cover shrink-0" sizes="48px" />
               <div>
                 <p className="text-sm font-bold">{r.artistName}</p>
                 <p className="text-sm">{r.trackName}</p>

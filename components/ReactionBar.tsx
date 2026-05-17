@@ -183,24 +183,24 @@ export default function ReactionBar({ trackId, initialLikes, initialDislikes, co
   }
 
   return (
-    <div className="flex gap-12 items-start">
+    <div className="flex gap-8 sm:gap-12 items-start">
       <button
         onClick={handleLike}
-        className="flex flex-col items-center gap-1 transition duration-150 ease-out active:scale-90"
+        className="flex flex-col items-center gap-1 p-2 transition duration-150 ease-out active:scale-90"
         aria-label="Like"
       >
         <Heart size={24} fill={vote === 'liked' ? 'red' : 'none'} stroke={vote === 'liked' ? 'red' : 'currentColor'} strokeWidth={vote === 'liked' ? 0 : 2} />
         <NumberDisplay value={likes} className="text-sm" />
       </button>
 
-      <TransitionLink href="/comments" className="flex flex-col items-center gap-1 transition-opacity hover:opacity-60" aria-label="Comments">
+      <TransitionLink href="/comments" className="flex flex-col items-center gap-1 p-2 transition-opacity hover:opacity-60" aria-label="Comments">
         <MessageCircle size={24} />
         <NumberDisplay value={commentCount} className="text-sm" />
       </TransitionLink>
 
       <button
         onClick={handleDislike}
-        className="flex flex-col items-center gap-1 transition duration-150 ease-out active:scale-90"
+        className="flex flex-col items-center gap-1 p-2 transition duration-150 ease-out active:scale-90"
         aria-label="Dislike"
       >
         <ThumbsDown size={24} fill={vote === 'disliked' ? 'black' : 'none'} strokeWidth={vote === 'disliked' ? 0 : 2} />

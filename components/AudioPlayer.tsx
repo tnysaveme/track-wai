@@ -29,7 +29,7 @@ export default function AudioPlayer({ previewUrl }: Props) {
   return (
     <>
       <audio ref={audioRef} src={previewUrl} onEnded={() => setIsPlaying(false)} />
-      <button onClick={togglePlay} aria-label={isPlaying ? 'Pause' : 'Play'}>
+      <button onClick={togglePlay} aria-label={isPlaying ? 'Pause' : 'Play'} className="p-3">
         <span className="inline-grid">
           <span
             className="[grid-area:1/1]"

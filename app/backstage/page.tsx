@@ -40,7 +40,8 @@ export default async function BackstagePage() {
               alt={activeTrack.itunes_track_name}
               width={64}
               height={64}
-              className="object-cover"
+              className="object-cover shrink-0"
+              sizes="64px"
             />
             <div>
               <p className="font-bold text-sm">{activeTrack.itunes_artist_name}</p>
@@ -75,15 +76,16 @@ export default async function BackstagePage() {
                 : '—'
 
               return (
-                <div key={track.id} className="flex items-center gap-4 pl-3 border-l-2 border-transparent transition-[border-color,opacity] duration-200 hover:border-black hover:opacity-80">
+                <div key={track.id} className="flex flex-wrap items-center gap-3 pl-3 border-l-2 border-transparent transition-[border-color,opacity] duration-200 hover:border-black hover:opacity-80">
                   <Image
                     src={track.itunes_album_art_url}
                     alt={track.itunes_track_name}
                     width={48}
                     height={48}
-                    className="object-cover"
+                    className="object-cover shrink-0"
+                    sizes="48px"
                   />
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <p className="font-bold text-sm">{track.itunes_artist_name}</p>
                     <p className="text-sm">{track.itunes_track_name}</p>
                     <p className="text-xs text-gray-400">

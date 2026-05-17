@@ -21,6 +21,7 @@ export default function AdminPasswordGate() {
           type="password"
           name="password"
           required
+          autoComplete="current-password"
           className="border-b border-black outline-none py-1 text-sm"
           placeholder="Password"
           autoFocus
