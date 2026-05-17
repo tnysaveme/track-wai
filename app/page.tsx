@@ -36,6 +36,7 @@ export default async function HomePage() {
             src={track.itunes_album_art_url}
             alt={`${track.itunes_track_name} album art`}
             spotifyUrl={track.spotify_url}
+            appleMusicUrl={track.apple_music_url ?? null}
           />
 
           <p className="text-base">

@@ -7,6 +7,7 @@ export type ItunesResult = {
   artworkUrl: string
   previewUrl: string | null
   collectionName: string
+  appleMusicUrl: string | null
 }
 
 type ItunesRawResult = {
@@ -17,6 +18,8 @@ type ItunesRawResult = {
   artistName: string
   artworkUrl100: string
   previewUrl?: string
+  trackViewUrl?: string
+  collectionViewUrl?: string
 }
 
 export async function searchItunes(
@@ -37,5 +40,6 @@ export async function searchItunes(
     artworkUrl: r.artworkUrl100.replace('100x100bb', '600x600bb'),
     previewUrl: r.previewUrl ?? null,
     collectionName: r.collectionName ?? '',
+    appleMusicUrl: r.trackViewUrl ?? r.collectionViewUrl ?? null,
   }))
 }

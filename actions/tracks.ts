@@ -59,6 +59,7 @@ export async function setActiveTrack(
   const { error } = await supabase.rpc('set_active_track', {
     p_item_type: itemType,
     p_spotify_url: spotifyUrl,
+    p_apple_music_url: itunesResult.appleMusicUrl ?? null,
     p_itunes_track_name: itunesResult.trackName,
     p_itunes_artist_name: itunesResult.artistName,
     p_itunes_album_art_url: itunesResult.artworkUrl,
