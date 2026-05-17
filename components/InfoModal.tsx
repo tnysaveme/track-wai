@@ -1,34 +1,34 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { Info, X } from 'lucide-react'
+import { useState, useEffect } from "react";
+import { Info, X } from "lucide-react";
 
-const CLOSE_DURATION = 180
+const CLOSE_DURATION = 180;
 
 export default function InfoModal() {
-  const [isVisible, setIsVisible] = useState(false)
-  const [isOpen, setIsOpen] = useState(false)
+  const [isVisible, setIsVisible] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   function openModal() {
-    setIsVisible(true)
+    setIsVisible(true);
     // setTimeout is more reliable than double-rAF on iOS Safari for
     // triggering CSS transitions after the element enters the DOM
-    setTimeout(() => setIsOpen(true), 16)
+    setTimeout(() => setIsOpen(true), 16);
   }
 
   function closeModal() {
-    setIsOpen(false)
-    setTimeout(() => setIsVisible(false), CLOSE_DURATION)
+    setIsOpen(false);
+    setTimeout(() => setIsVisible(false), CLOSE_DURATION);
   }
 
   useEffect(() => {
-    if (!isVisible) return
+    if (!isVisible) return;
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') closeModal()
+      if (e.key === "Escape") closeModal();
     }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [isVisible])
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isVisible]);
 
   return (
     <>
@@ -42,14 +42,16 @@ export default function InfoModal() {
 
       {isVisible && (
         <div
-          className={`modal-backdrop fixed inset-0 bg-black/20 flex items-center justify-center z-50${isOpen ? ' is-open' : ''}`}
-          onClick={(e) => { if (e.target === e.currentTarget) closeModal() }}
+          className={`modal-backdrop fixed inset-0 bg-black/20 flex items-center justify-center z-50${isOpen ? " is-open" : ""}`}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) closeModal();
+          }}
         >
           <div
             role="dialog"
             aria-modal="true"
             aria-labelledby="info-modal-title"
-            className={`modal-panel bg-white p-8 mx-4 sm:mx-0 w-full max-w-sm relative${isOpen ? ' is-open' : ''}`}
+            className={`modal-panel bg-white p-8 mx-4 sm:mx-0 w-full max-w-sm relative${isOpen ? " is-open" : ""}`}
           >
             <button
               onClick={closeModal}
@@ -59,14 +61,17 @@ export default function InfoModal() {
               <X size={18} />
             </button>
 
-            <h2 id="info-modal-title" className="font-bold text-lg mb-6">How it works</h2>
+            <h2 id="info-modal-title" className="font-bold text-lg mb-6">
+              How it works
+            </h2>
 
             <div className="flex flex-col gap-5 text-sm leading-relaxed">
               <div>
                 <p className="font-bold mb-1">Your votes are remembered</p>
                 <p className="text-gray-500">
-                  Likes and dislikes are saved in your browser&apos;s cache — no account needed.
-                  Your vote persists between visits as long as you&apos;re on the same device.
+                  Likes and dislikes are saved in your browser&apos;s cache so
+                  no account needed. Your vote persists between visits as long
+                  as you&apos;re on the same device.
                 </p>
               </div>
 
@@ -84,5 +89,5 @@ export default function InfoModal() {
         </div>
       )}
     </>
-  )
+  );
 }
