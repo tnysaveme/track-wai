@@ -104,7 +104,7 @@ export default function AddCommentModal({ trackId }: Props) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="w-full border-b border-black outline-none py-1 text-sm"
+                  className="w-full border-b border-black outline-none py-1 text-base"
                   placeholder="Your name"
                 />
               </div>
@@ -125,7 +125,7 @@ export default function AddCommentModal({ trackId }: Props) {
                   required
                   maxLength={200}
                   rows={3}
-                  className="w-full border-b border-black outline-none py-1 text-sm resize-none"
+                  className="w-full border-b border-black outline-none py-1 text-base resize-none"
                   placeholder="What do you think?"
                 />
               </div>
