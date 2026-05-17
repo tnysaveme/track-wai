@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { addComment } from '@/actions/comments'
+import { setThemeColorForModal } from '@/lib/theme-color'
 
 type Props = {
   trackId: string
@@ -19,6 +20,7 @@ export default function AddCommentModal({ trackId }: Props) {
   const [submitting, setSubmitting] = useState(false)
 
   function openModal() {
+    setThemeColorForModal(true)
     setModal('open')
   }
 
@@ -30,6 +32,7 @@ export default function AddCommentModal({ trackId }: Props) {
       setName('')
       setBody('')
       setError('')
+      setThemeColorForModal(false)
     }, CLOSE_DURATION)
   }
 

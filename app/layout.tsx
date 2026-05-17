@@ -12,6 +12,9 @@ const figtree = Figtree({
 export const metadata: Metadata = {
   title: 'Track Wai',
   description: 'What are we listening to?',
+  other: {
+    'theme-color': '#ffffff',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
