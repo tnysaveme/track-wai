@@ -155,17 +155,14 @@
 }
 
 .modal-backdrop {
-  opacity: 0;
   pointer-events: none;
   overscroll-behavior: contain;
   touch-action: none;
 }
 .modal-backdrop.is-open {
-  opacity: 1;
   pointer-events: auto;
 }
 .modal-backdrop.is-closing {
-  opacity: 0;
   pointer-events: none;
 }
 

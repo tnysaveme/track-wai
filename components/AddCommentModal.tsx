@@ -73,14 +73,14 @@ export default function AddCommentModal({ trackId }: Props) {
 
       {modal !== 'closed' && (
         <div
-          className={`modal-backdrop fixed inset-0 bg-black/20 flex items-center justify-center z-50 ${isClosing ? 'is-closing' : 'is-open'}`}
+          className={`modal-backdrop fixed inset-0 flex items-center justify-center z-50 ${isClosing ? 'is-closing' : 'is-open'}`}
           onClick={(e) => { if (e.target === e.currentTarget) closeModal() }}
         >
           <div
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-title"
-            className={`modal-panel bg-white p-8 mx-4 sm:mx-0 w-full max-w-md relative ${isClosing ? 'is-closing' : 'is-open'}`}
+            className={`modal-panel bg-white p-8 mx-4 sm:mx-0 w-full max-w-md relative shadow-2xl ${isClosing ? 'is-closing' : 'is-open'}`}
             style={{ paddingBottom: 'max(2rem, calc(2rem + env(safe-area-inset-bottom)))' }}
           >
             <button
