@@ -85,14 +85,7 @@ export default function AlbumArt({ src, alt, spotifyUrl, appleMusicUrl }: Props)
   }
 
   return (
-    <div
-      ref={containerRef}
-      className="relative w-full max-w-[375px] overflow-hidden"
-      style={{
-        boxShadow: showPicker ? 'inset 0 0 0 1px black' : 'inset 0 0 0 0px black',
-        transition: 'box-shadow 380ms cubic-bezier(0.76, 0, 0.24, 1)',
-      }}
-    >
+    <div ref={containerRef} className="relative w-full max-w-[375px]">
       <button
         onClick={handleImageClick}
         className="block w-full transition-transform duration-300 ease-out hover:scale-[1.02] active:scale-[0.99]"
@@ -110,23 +103,24 @@ export default function AlbumArt({ src, alt, spotifyUrl, appleMusicUrl }: Props)
         />
       </button>
 
-      {/* Service picker strip — clips upward from the bottom of the image */}
+      {/* Floating service picker — inset from all edges, sits over the bottom of the image */}
       <div
-        className="absolute inset-x-0 bottom-0 bg-white border-t border-black"
+        className="absolute inset-x-3 bottom-3 pointer-events-none"
         style={{
           clipPath: showPicker ? 'inset(0 0 0% 0)' : 'inset(0 0 100% 0)',
           transition: 'clip-path 380ms cubic-bezier(0.76, 0, 0.24, 1)',
-          pointerEvents: showPicker ? 'auto' : 'none',
         }}
         aria-hidden={!showPicker}
       >
-        <div className="flex divide-x divide-black">
+        <div
+          className="flex bg-white border border-black divide-x divide-black pointer-events-auto"
+        >
           <a
             href={spotifyUrl}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => setShowPicker(false)}
-            className="flex-1 flex items-center justify-center gap-2.5 py-4
+            className="flex-1 flex items-center justify-center gap-2.5 py-3.5
               text-[10px] font-bold tracking-[0.18em] uppercase
               transition-colors duration-150 hover:bg-black hover:text-white"
           >
@@ -139,7 +133,7 @@ export default function AlbumArt({ src, alt, spotifyUrl, appleMusicUrl }: Props)
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setShowPicker(false)}
-              className="flex-1 flex items-center justify-center gap-2.5 py-4
+              className="flex-1 flex items-center justify-center gap-2.5 py-3.5
                 text-[10px] font-bold tracking-[0.18em] uppercase
                 transition-colors duration-150 hover:bg-black hover:text-white"
             >
