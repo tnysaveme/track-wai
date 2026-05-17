@@ -73,6 +73,19 @@ export async function setActiveTrack(
   return {}
 }
 
+export async function deleteTrack(trackId: string): Promise<{ error?: string }> {
+  if (!(await requireAdminSession())) return { error: 'Unauthorized.' }
+  if (!trackId?.trim()) return { error: 'Invalid track ID.' }
+
+  const supabase = createServiceClient()
+  const { error } = await supabase.from('tracks').delete().eq('id', trackId).eq('is_active', false)
+
+  if (error) return { error: 'Failed to delete track.' }
+
+  revalidatePath('/backstage')
+  return {}
+}
+
 export async function reactivateTrack(trackId: string): Promise<{ error?: string }> {
   if (!(await requireAdminSession())) return { error: 'Unauthorized.' }
   if (!trackId?.trim()) return { error: 'Invalid track ID.' }
