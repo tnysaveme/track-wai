@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { createServiceClient } from '@/lib/supabase/server'
 import AddCommentModal from '@/components/AddCommentModal'
+import CommentsList from '@/components/CommentsList'
 
 export default async function CommentsPage() {
   const supabase = createServiceClient()
@@ -12,7 +13,7 @@ export default async function CommentsPage() {
     .eq('is_active', true)
     .single()
 
-  const comments = track
+  const initialComments = track
     ? ((
         await supabase
           .from('comments')
@@ -31,22 +32,16 @@ export default async function CommentsPage() {
         </Link>
       </div>
 
-      {comments.length === 0 ? (
+      {track ? (
+        <>
+          <CommentsList trackId={track.id} initialComments={initialComments} />
+          <AddCommentModal trackId={track.id} />
+        </>
+      ) : (
         <div className="flex items-center justify-center min-h-[60vh]">
           <p className="text-gray-500">Whatcha say?</p>
         </div>
-      ) : (
-        <div className="flex flex-col gap-6 max-w-lg ml-[15%]">
-          {comments.map((comment) => (
-            <div key={comment.id}>
-              <p className="text-sm font-bold">{comment.author_name}</p>
-              <p className="text-base mt-0.5">{comment.body}</p>
-            </div>
-          ))}
-        </div>
       )}
-
-      {track && <AddCommentModal trackId={track.id} />}
     </main>
   )
 }
