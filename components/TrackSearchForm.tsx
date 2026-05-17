@@ -96,7 +96,7 @@ export default function TrackSearchForm() {
               key={r.stableId}
               onClick={() => setSelected(r)}
               className={`result-enter flex items-center gap-3 p-2 text-left border transition-colors ${
-                selected === r ? 'border-black' : 'border-transparent hover:border-gray-200'
+                selected === r ? 'border-black' : 'border-transparent hov:border-gray-200'
               }`}
               style={{ animationDelay: `${i * 40}ms` }}
             >

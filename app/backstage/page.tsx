@@ -83,7 +83,7 @@ export default async function BackstagePage() {
                 : '—'
 
               return (
-                <div key={track.id} className="flex flex-wrap items-center gap-3 pl-3 border-l-2 border-transparent transition-[border-color,opacity] duration-200 hover:border-black hover:opacity-80">
+                <div key={track.id} className="flex flex-wrap items-center gap-3 pl-3 border-l-2 border-transparent transition-[border-color,opacity] duration-200 hov:border-black hov:opacity-80">
                   <Image
                     src={track.itunes_album_art_url}
                     alt={track.itunes_track_name}

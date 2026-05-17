@@ -4,6 +4,21 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * hov: variant — like hover: but guarded by @media (hover: hover).
+ * Touch screens report :hover after a tap and it can "stick" until the next
+ * interaction.  Use hov: instead of hover: for any style that would look
+ * obviously wrong if it persisted on a touch device (background fills,
+ * colour swaps, etc.).  Subtle opacity fades are fine with plain hover:.
+ */
+@custom-variant hov {
+  @media (hover: hover) {
+    &:hover {
+      @slot;
+    }
+  }
+}
+
 @theme {
   --font-sans: var(--font-figtree);
 }

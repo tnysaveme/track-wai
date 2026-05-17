@@ -52,7 +52,8 @@ export async function setActiveTrack(
   let spotifyUrl: string
   try {
     spotifyUrl = (await searchSpotify(query, spotifyType)) ?? fallbackSpotifyUrl
-  } catch {
+  } catch (spotifyErr) {
+    console.error('[setActiveTrack] Spotify search failed, using fallback URL:', spotifyErr)
     spotifyUrl = fallbackSpotifyUrl
   }
 
@@ -66,7 +67,10 @@ export async function setActiveTrack(
     p_itunes_preview_url: itunesResult.previewUrl,
   })
 
-  if (error) return { error: 'Failed to set new track.' }
+  if (error) {
+    console.error('[setActiveTrack] rpc failed:', error)
+    return { error: 'Failed to set new track.' }
+  }
 
   revalidatePath('/')
   revalidatePath('/comments')
@@ -85,7 +89,10 @@ export async function deactivateActiveTrack(trackId: string): Promise<{ error?: 
     .eq('id', trackId)
     .eq('is_active', true)
 
-  if (error) return { error: 'Failed to deactivate track.' }
+  if (error) {
+    console.error('[deactivateActiveTrack] update failed:', error)
+    return { error: 'Failed to deactivate track.' }
+  }
 
   revalidatePath('/')
   revalidatePath('/comments')
@@ -100,7 +107,10 @@ export async function deleteTrack(trackId: string): Promise<{ error?: string }> 
   const supabase = createServiceClient()
   const { error } = await supabase.from('tracks').delete().eq('id', trackId)
 
-  if (error) return { error: 'Failed to delete track.' }
+  if (error) {
+    console.error('[deleteTrack] delete failed:', error)
+    return { error: 'Failed to delete track.' }
+  }
 
   revalidatePath('/')
   revalidatePath('/comments')
@@ -115,7 +125,10 @@ export async function reactivateTrack(trackId: string): Promise<{ error?: string
   const supabase = createServiceClient()
   const { error } = await supabase.rpc('reactivate_track', { p_track_id: trackId })
 
-  if (error) return { error: 'Failed to reactivate track.' }
+  if (error) {
+    console.error('[reactivateTrack] rpc failed:', error)
+    return { error: 'Failed to reactivate track.' }
+  }
 
   revalidatePath('/')
   revalidatePath('/comments')

@@ -122,7 +122,7 @@ export default function AlbumArt({ src, alt, spotifyUrl, appleMusicUrl }: Props)
             onClick={() => setShowPicker(false)}
             className="flex-1 flex items-center justify-center gap-2.5 py-3.5
               text-[10px] font-bold tracking-[0.18em] uppercase
-              transition-colors duration-150 hover:bg-black hover:text-white"
+              transition-colors duration-150 hov:bg-black hov:text-white"
           >
             <SpotifyIcon />
             Spotify
@@ -135,7 +135,7 @@ export default function AlbumArt({ src, alt, spotifyUrl, appleMusicUrl }: Props)
               onClick={() => setShowPicker(false)}
               className="flex-1 flex items-center justify-center gap-2.5 py-3.5
                 text-[10px] font-bold tracking-[0.18em] uppercase
-                transition-colors duration-150 hover:bg-black hover:text-white"
+                transition-colors duration-150 hov:bg-black hov:text-white"
             >
               <AppleMusicIcon />
               Apple Music
