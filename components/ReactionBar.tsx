@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Heart, MessageCircle, ThumbsDown } from 'lucide-react'
 import Link from 'next/link'
 import { likeTrack, unlikeTrack, dislikeTrack, undislikeTrack } from '@/actions/reactions'
@@ -23,6 +23,8 @@ export default function ReactionBar({ trackId, initialLikes, initialDislikes, co
   const [dislikes, setDislikes] = useState(initialDislikes)
   const [commentCount, setCommentCount] = useState(initialCommentCount)
   const [vote, setVote] = useState<VoteState>(null)
+  // True while a user action is in flight — suppresses intermediate realtime events
+  const pendingRef = useRef(false)
 
   useEffect(() => {
     const stored = localStorage.getItem(VOTE_KEY)
@@ -44,6 +46,7 @@ export default function ReactionBar({ trackId, initialLikes, initialDislikes, co
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'tracks', filter: `id=eq.${trackId}` },
         (payload) => {
+          if (pendingRef.current) return
           const updated = payload.new as { likes: number; dislikes: number }
           setLikes(updated.likes)
           setDislikes(updated.dislikes)
@@ -79,35 +82,55 @@ export default function ReactionBar({ trackId, initialLikes, initialDislikes, co
     localStorage.setItem(VOTE_KEY, JSON.stringify({ trackId, vote: newVote }))
   }
 
+  function releasePending() {
+    // Hold the lock 300 ms after the last action so late-arriving intermediate
+    // realtime events (from earlier operations in the same sequence) are discarded
+    setTimeout(() => { pendingRef.current = false }, 300)
+  }
+
   async function handleLike() {
     const prevVote = vote
     const prevLikes = likes
     const prevDislikes = dislikes
+    pendingRef.current = true
 
     if (vote === 'liked') {
+      // Optimistic
       setLikes((l) => l - 1)
       saveVote(null)
+      // Server
       const result = await unlikeTrack(trackId)
       if (result.error) {
+        pendingRef.current = false
         setLikes(prevLikes)
         saveVote(prevVote)
+      } else {
+        releasePending()
       }
     } else {
+      // Optimistic — all updates before any await
+      if (vote === 'disliked') setDislikes((d) => d - 1)
+      setLikes((l) => l + 1)
+      saveVote('liked')
+      // Server
       if (vote === 'disliked') {
-        setDislikes((d) => d - 1)
         const undislikeResult = await undislikeTrack(trackId)
         if (undislikeResult.error) {
+          pendingRef.current = false
+          setLikes(prevLikes)
           setDislikes(prevDislikes)
+          saveVote(prevVote)
           return
         }
       }
-      setLikes((l) => l + 1)
-      saveVote('liked')
       const result = await likeTrack(trackId)
       if (result.error) {
+        pendingRef.current = false
         setLikes(prevLikes)
         setDislikes(prevDislikes)
         saveVote(prevVote)
+      } else {
+        releasePending()
       }
     }
   }
@@ -116,31 +139,45 @@ export default function ReactionBar({ trackId, initialLikes, initialDislikes, co
     const prevVote = vote
     const prevLikes = likes
     const prevDislikes = dislikes
+    pendingRef.current = true
 
     if (vote === 'disliked') {
+      // Optimistic
       setDislikes((d) => d - 1)
       saveVote(null)
+      // Server
       const result = await undislikeTrack(trackId)
       if (result.error) {
+        pendingRef.current = false
         setDislikes(prevDislikes)
         saveVote(prevVote)
+      } else {
+        releasePending()
       }
     } else {
+      // Optimistic — all updates before any await
+      if (vote === 'liked') setLikes((l) => l - 1)
+      setDislikes((d) => d + 1)
+      saveVote('disliked')
+      // Server
       if (vote === 'liked') {
-        setLikes((l) => l - 1)
         const unlikeResult = await unlikeTrack(trackId)
         if (unlikeResult.error) {
+          pendingRef.current = false
           setLikes(prevLikes)
+          setDislikes(prevDislikes)
+          saveVote(prevVote)
           return
         }
       }
-      setDislikes((d) => d + 1)
-      saveVote('disliked')
       const result = await dislikeTrack(trackId)
       if (result.error) {
+        pendingRef.current = false
         setLikes(prevLikes)
         setDislikes(prevDislikes)
         saveVote(prevVote)
+      } else {
+        releasePending()
       }
     }
   }

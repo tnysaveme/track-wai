@@ -31,10 +31,8 @@ export default function NumberDisplay({ value, className }: Props) {
     applyDigits(group, String(value))
   }, [value])
 
-  // Render the raw number as SSR fallback; the effect upgrades it to digit spans
+  // Render empty — effect owns the children entirely, no React reconciliation conflict
   return (
-    <span ref={groupRef} className={`t-digit-group${className ? ` ${className}` : ''}`}>
-      {value}
-    </span>
+    <span ref={groupRef} className={`t-digit-group${className ? ` ${className}` : ''}`} />
   )
 }
