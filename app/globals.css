@@ -137,33 +137,54 @@
 
 
 /* ─── Modal ─────────────────────────────────────────────────────── */
+/*
+ * Using @keyframes instead of transition:
+ * - @keyframes are pre-planned by the browser; no need to capture a
+ *   "from" state before the class change, which races on iOS Safari
+ * - No will-change: it forces GPU layer promotion and causes iOS to
+ *   repaint fixed elements (the header/footer flash)
+ * - translate3d(0,y,0) composites on the GPU without that side-effect
+ */
+@keyframes modal-backdrop-in  { from { opacity: 0 } to { opacity: 1 } }
+@keyframes modal-backdrop-out { from { opacity: 1 } to { opacity: 0 } }
+
+@keyframes modal-panel-in {
+  from { opacity: 0; transform: translate3d(0, 14px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0,    0); }
+}
+@keyframes modal-panel-out {
+  from { opacity: 1; transform: translate3d(0, 0,    0); }
+  to   { opacity: 0; transform: translate3d(0, 14px, 0); }
+}
+
 .modal-backdrop {
-  transition: opacity 180ms ease-out;
   opacity: 0;
-  /* Prevent iOS rubber-band scroll bleeding through the backdrop */
+  pointer-events: none;
   overscroll-behavior: contain;
   touch-action: none;
 }
-.modal-backdrop.is-open { opacity: 1; }
-
-.modal-panel {
-  transition:
-    opacity   200ms ease-out,
-    transform 250ms cubic-bezier(0.22, 1, 0.36, 1);
-  opacity: 0;
-  /* translateY only — scale() causes GPU rasterisation jank on iOS Safari */
-  transform: translateY(14px);
-  /* Promote to composite layer upfront so iOS doesn't flash on first paint */
-  will-change: transform, opacity;
+.modal-backdrop.is-open {
+  animation: modal-backdrop-in 220ms ease-out forwards;
+  pointer-events: auto;
 }
+.modal-backdrop.is-closing {
+  animation: modal-backdrop-out 180ms ease-in forwards;
+  pointer-events: none;
+}
+
+.modal-panel { opacity: 0; }
 .modal-panel.is-open {
-  opacity: 1;
-  transform: translateY(0);
+  animation: modal-panel-in 300ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.modal-panel.is-closing {
+  animation: modal-panel-out 180ms ease-in forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .modal-backdrop,
-  .modal-panel { transition: none; }
+  .modal-backdrop.is-open    { animation: none; opacity: 1; }
+  .modal-backdrop.is-closing { animation: none; opacity: 0; }
+  .modal-panel.is-open       { animation: none; opacity: 1; }
+  .modal-panel.is-closing    { animation: none; opacity: 0; }
 }
 
 /* ─── New comment slide-in ──────────────────────────────────────── */

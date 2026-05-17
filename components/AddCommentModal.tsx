@@ -8,27 +8,25 @@ type Props = {
   trackId: string
 }
 
-const CLOSE_DURATION = 180 // ms — matches modal-panel transition in globals.css
+type ModalState = 'closed' | 'open' | 'closing'
+const CLOSE_DURATION = 180 // ms — matches modal-panel-out duration
 
 export default function AddCommentModal({ trackId }: Props) {
-  const [isVisible, setIsVisible] = useState(false) // in DOM
-  const [isOpen, setIsOpen] = useState(false)       // has open appearance
+  const [modal, setModal] = useState<ModalState>('closed')
   const [name, setName] = useState('')
   const [body, setBody] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   function openModal() {
-    setIsVisible(true)
-    // setTimeout is more reliable than double-rAF on iOS Safari for
-    // triggering CSS transitions after the element enters the DOM
-    setTimeout(() => setIsOpen(true), 16)
+    setModal('open')
   }
 
   function closeModal() {
-    setIsOpen(false)
+    if (modal !== 'open') return
+    setModal('closing')
     setTimeout(() => {
-      setIsVisible(false)
+      setModal('closed')
       setName('')
       setBody('')
       setError('')
@@ -36,13 +34,13 @@ export default function AddCommentModal({ trackId }: Props) {
   }
 
   useEffect(() => {
-    if (!isVisible) return
+    if (modal === 'closed') return
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') closeModal()
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [isVisible])
+  }, [modal])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -61,6 +59,8 @@ export default function AddCommentModal({ trackId }: Props) {
     setSubmitting(false)
   }
 
+  const isClosing = modal === 'closing'
+
   return (
     <>
       <button
@@ -71,16 +71,16 @@ export default function AddCommentModal({ trackId }: Props) {
         +
       </button>
 
-      {isVisible && (
+      {modal !== 'closed' && (
         <div
-          className={`modal-backdrop fixed inset-0 bg-black/20 flex items-center justify-center z-50${isOpen ? ' is-open' : ''}`}
+          className={`modal-backdrop fixed inset-0 bg-black/20 flex items-center justify-center z-50 ${isClosing ? 'is-closing' : 'is-open'}`}
           onClick={(e) => { if (e.target === e.currentTarget) closeModal() }}
         >
           <div
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-title"
-            className={`modal-panel bg-white p-8 mx-4 sm:mx-0 w-full max-w-md relative${isOpen ? ' is-open' : ''}`}
+            className={`modal-panel bg-white p-8 mx-4 sm:mx-0 w-full max-w-md relative ${isClosing ? 'is-closing' : 'is-open'}`}
             style={{ paddingBottom: 'max(2rem, calc(2rem + env(safe-area-inset-bottom)))' }}
           >
             <button

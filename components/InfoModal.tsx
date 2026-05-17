@@ -1,34 +1,36 @@
-"use client";
+'use client'
 
-import { useState, useEffect } from "react";
-import { Info, X } from "lucide-react";
+import { useState, useEffect } from 'react'
+import { Info, X } from 'lucide-react'
 
-const CLOSE_DURATION = 180;
+type ModalState = 'closed' | 'open' | 'closing'
+const CLOSE_DURATION = 180 // ms — matches modal-panel-out duration
 
 export default function InfoModal() {
-  const [isVisible, setIsVisible] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  const [modal, setModal] = useState<ModalState>('closed')
 
   function openModal() {
-    setIsVisible(true);
-    // setTimeout is more reliable than double-rAF on iOS Safari for
-    // triggering CSS transitions after the element enters the DOM
-    setTimeout(() => setIsOpen(true), 16);
+    setModal('open')
   }
 
   function closeModal() {
-    setIsOpen(false);
-    setTimeout(() => setIsVisible(false), CLOSE_DURATION);
+    if (modal !== 'open') return
+    setModal('closing')
+    setTimeout(() => {
+      setModal('closed')
+    }, CLOSE_DURATION)
   }
 
   useEffect(() => {
-    if (!isVisible) return;
+    if (modal === 'closed') return
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") closeModal();
+      if (e.key === 'Escape') closeModal()
     }
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [isVisible]);
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [modal])
+
+  const isClosing = modal === 'closing'
 
   return (
     <>
@@ -40,18 +42,16 @@ export default function InfoModal() {
         <Info size={18} />
       </button>
 
-      {isVisible && (
+      {modal !== 'closed' && (
         <div
-          className={`modal-backdrop fixed inset-0 bg-black/20 flex items-center justify-center z-50${isOpen ? " is-open" : ""}`}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) closeModal();
-          }}
+          className={`modal-backdrop fixed inset-0 bg-black/20 flex items-center justify-center z-50 ${isClosing ? 'is-closing' : 'is-open'}`}
+          onClick={(e) => { if (e.target === e.currentTarget) closeModal() }}
         >
           <div
             role="dialog"
             aria-modal="true"
             aria-labelledby="info-modal-title"
-            className={`modal-panel bg-white p-8 mx-4 sm:mx-0 w-full max-w-sm relative${isOpen ? " is-open" : ""}`}
+            className={`modal-panel bg-white p-8 mx-4 sm:mx-0 w-full max-w-sm relative ${isClosing ? 'is-closing' : 'is-open'}`}
           >
             <button
               onClick={closeModal}
@@ -89,5 +89,5 @@ export default function InfoModal() {
         </div>
       )}
     </>
-  );
+  )
 }
