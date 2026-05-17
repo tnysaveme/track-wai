@@ -91,13 +91,14 @@ export default function TrackSearchForm() {
 
       {results.length > 0 && (
         <div className="flex flex-col gap-2 mb-4">
-          {results.map((r) => (
+          {results.map((r, i) => (
             <button
               key={r.stableId}
               onClick={() => setSelected(r)}
-              className={`flex items-center gap-3 p-2 text-left border ${
+              className={`result-enter flex items-center gap-3 p-2 text-left border transition-colors ${
                 selected === r ? 'border-black' : 'border-transparent hover:border-gray-200'
               }`}
+              style={{ animationDelay: `${i * 40}ms` }}
             >
               <Image src={r.artworkUrl} alt={r.trackName} width={48} height={48} className="object-cover" />
               <div>

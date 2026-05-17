@@ -8,28 +8,42 @@ type Props = {
   trackId: string
 }
 
+const CLOSE_DURATION = 180 // ms — matches modal-panel transition in globals.css
+
 export default function AddCommentModal({ trackId }: Props) {
-  const [open, setOpen] = useState(false)
+  const [isVisible, setIsVisible] = useState(false) // in DOM
+  const [isOpen, setIsOpen] = useState(false)       // has open appearance
   const [name, setName] = useState('')
   const [body, setBody] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
-  function handleClose() {
-    setOpen(false)
-    setName('')
-    setBody('')
-    setError('')
+  function openModal() {
+    setIsVisible(true)
+    // Two rAFs: first puts element in DOM, second triggers CSS transition
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setIsOpen(true))
+    })
+  }
+
+  function closeModal() {
+    setIsOpen(false)
+    setTimeout(() => {
+      setIsVisible(false)
+      setName('')
+      setBody('')
+      setError('')
+    }, CLOSE_DURATION)
   }
 
   useEffect(() => {
-    if (!open) return
+    if (!isVisible) return
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') handleClose()
+      if (e.key === 'Escape') closeModal()
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [open])
+  }, [isVisible])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -44,31 +58,34 @@ export default function AddCommentModal({ trackId }: Props) {
       return
     }
 
-    handleClose()
+    closeModal()
     setSubmitting(false)
   }
 
   return (
     <>
       <button
-        onClick={() => setOpen(true)}
+        onClick={openModal}
         aria-label="Add comment"
-        className="fixed bottom-8 right-8 text-3xl font-light leading-none"
+        className="fixed bottom-8 right-8 text-3xl font-light leading-none transition-transform duration-150 hover:scale-110 active:scale-95"
       >
         +
       </button>
 
-      {open && (
-        <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
+      {isVisible && (
+        <div
+          className={`modal-backdrop fixed inset-0 bg-black/20 flex items-center justify-center z-50${isOpen ? ' is-open' : ''}`}
+          onClick={(e) => { if (e.target === e.currentTarget) closeModal() }}
+        >
           <div
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-title"
-            className="bg-white p-8 w-full max-w-md relative"
+            className={`modal-panel bg-white p-8 w-full max-w-md relative${isOpen ? ' is-open' : ''}`}
           >
             <button
-              onClick={handleClose}
-              className="absolute top-4 right-4"
+              onClick={closeModal}
+              className="absolute top-4 right-4 transition-opacity hover:opacity-60"
               aria-label="Close"
             >
               <X size={20} />
@@ -112,7 +129,7 @@ export default function AddCommentModal({ trackId }: Props) {
               <button
                 type="submit"
                 disabled={submitting}
-                className="self-end font-bold text-sm disabled:opacity-50"
+                className="self-end font-bold text-sm disabled:opacity-50 transition-opacity hover:opacity-60"
               >
                 {submitting ? 'Posting...' : 'Post'}
               </button>

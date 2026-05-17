@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabaseBrowser } from '@/lib/supabase/client'
 
 type Comment = {
@@ -17,6 +17,8 @@ type Props = {
 
 export default function CommentsList({ trackId, initialComments }: Props) {
   const [comments, setComments] = useState<Comment[]>(initialComments)
+  // IDs that were present on mount — they don't animate in
+  const initialIds = useRef(new Set(initialComments.map((c) => c.id)))
 
   useEffect(() => {
     const channel = supabaseBrowser
@@ -47,7 +49,10 @@ export default function CommentsList({ trackId, initialComments }: Props) {
   return (
     <div className="flex flex-col gap-6 max-w-lg ml-[15%]">
       {comments.map((comment) => (
-        <div key={comment.id}>
+        <div
+          key={comment.id}
+          className={initialIds.current.has(comment.id) ? '' : 'comment-new'}
+        >
           <p className="text-sm font-bold">{comment.author_name}</p>
           <p className="text-base mt-0.5">{comment.body}</p>
         </div>
