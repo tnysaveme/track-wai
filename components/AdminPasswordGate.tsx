@@ -2,15 +2,24 @@
 
 import { useState } from 'react'
 import { checkAdminPassword } from '@/actions/admin'
+import { Spinner } from '@/components/Spinner'
 
 export default function AdminPasswordGate() {
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    setLoading(true)
+    setError('')
     const formData = new FormData(e.currentTarget)
     const result = await checkAdminPassword(formData)
-    if (result?.error) setError(result.error)
+    if (result?.error) {
+      setError(result.error)
+      setLoading(false)
+    }
+    // On success the server redirects — keep loading=true so the button
+    // stays in the loading state while the navigation happens.
   }
 
   return (
@@ -25,10 +34,16 @@ export default function AdminPasswordGate() {
           className="border-b border-black outline-none py-2 text-base"
           placeholder="Password"
           autoFocus
+          disabled={loading}
         />
         {error && <p className="text-sm text-red-600">{error}</p>}
-        <button type="submit" className="font-bold text-base self-start py-1">
-          Enter
+        <button
+          type="submit"
+          disabled={loading}
+          className="font-bold text-base self-start py-1 flex items-center gap-1.5 disabled:opacity-50"
+        >
+          {loading && <Spinner />}
+          {loading ? 'Entering' : 'Enter'}
         </button>
       </form>
     </main>

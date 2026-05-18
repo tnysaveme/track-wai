@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import { addComment } from '@/actions/comments'
+import { Spinner } from '@/components/Spinner'
 
 type Props = {
   trackId: string
@@ -135,9 +136,10 @@ export default function AddCommentModal({ trackId }: Props) {
               <button
                 type="submit"
                 disabled={submitting}
-                className="self-end font-bold text-sm disabled:opacity-50 transition-opacity hover:opacity-60"
+                className="self-end font-bold text-sm disabled:opacity-50 transition-opacity hover:opacity-60 flex items-center gap-1.5"
               >
-                {submitting ? 'Posting...' : 'Post'}
+                {submitting && <Spinner />}
+                {submitting ? 'Posting' : 'Post'}
               </button>
             </form>
           </div>

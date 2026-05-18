@@ -1,15 +1,32 @@
 export default function CommentsLoading() {
+  // Vary widths so skeletons don't look uniform
+  const lines: [string, string][] = [
+    ['w-16', 'w-full'],
+    ['w-20', 'w-5/6'],
+    ['w-14', 'w-full'],
+    ['w-24', 'w-4/5'],
+    ['w-16', 'w-full'],
+  ]
+
   return (
-    <main className="min-h-screen bg-white p-8">
+    <main className="min-h-screen bg-white p-8" aria-busy="true" aria-label="Loading comments">
+      {/* Header — mirrors app/comments/page.tsx */}
       <div className="flex items-center justify-between mb-10">
-        <h1 className="text-xl font-bold">Comments</h1>
+        <div className="skeleton h-6 w-24" />
+        <div className="skeleton h-5 w-5" />
       </div>
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="flex items-center gap-2" aria-label="Loading" role="status">
-          <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce [animation-delay:-0.3s]" />
-          <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce [animation-delay:-0.15s]" />
-          <span className="w-1.5 h-1.5 bg-black rounded-full animate-bounce" />
-        </div>
+
+      {/* Comment skeletons */}
+      <div className="flex flex-col gap-7">
+        {lines.map(([nameW, bodyW], i) => (
+          <div key={i} className="flex flex-col gap-2">
+            {/* Author name */}
+            <div className={`skeleton h-3 ${nameW}`} />
+            {/* Comment body — two lines */}
+            <div className={`skeleton h-4 ${bodyW}`} />
+            <div className="skeleton h-4 w-2/3" />
+          </div>
+        ))}
       </div>
     </main>
   )

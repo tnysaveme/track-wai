@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { toast } from 'sonner'
 import { searchTracks, setActiveTrack } from '@/actions/tracks'
 import type { ItunesResult } from '@/lib/itunes'
+import { Spinner } from '@/components/Spinner'
 
 export default function TrackSearchForm() {
   const [itemType, setItemType] = useState<'song' | 'album'>('song')
@@ -82,8 +83,9 @@ export default function TrackSearchForm() {
           required
           className="border-b border-black outline-none py-2 text-base flex-1"
         />
-        <button type="submit" disabled={searching} className="font-bold text-sm disabled:opacity-50 py-2 shrink-0">
-          {searching ? 'Searching...' : 'Search'}
+        <button type="submit" disabled={searching} className="font-bold text-sm disabled:opacity-50 py-2 shrink-0 flex items-center gap-1.5">
+          {searching && <Spinner />}
+          {searching ? 'Searching' : 'Search'}
         </button>
       </form>
 
@@ -117,9 +119,10 @@ export default function TrackSearchForm() {
         <button
           onClick={handleConfirm}
           disabled={confirming}
-          className="font-bold text-sm disabled:opacity-50 py-2"
+          className="font-bold text-sm disabled:opacity-50 py-2 flex items-center gap-1.5"
         >
-          {confirming ? 'Setting...' : `Set "${selected.trackName}"`}
+          {confirming && <Spinner />}
+          {confirming ? 'Setting' : `Set "${selected.trackName}"`}
         </button>
       )}
     </section>

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { deactivateActiveTrack, deleteTrack } from '@/actions/tracks'
+import { Spinner } from '@/components/Spinner'
 
 type Props = {
   trackId: string
@@ -11,17 +12,19 @@ type Props = {
 
 export default function ActiveTrackActions({ trackId, trackName }: Props) {
   const [confirmingDelete, setConfirmingDelete] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState<'deactivate' | 'delete' | null>(null)
+
+  const busy = loading !== null
 
   async function handleDeactivate() {
-    setLoading(true)
+    setLoading('deactivate')
     const result = await deactivateActiveTrack(trackId)
     if (result.error) {
       toast.error(result.error)
+      setLoading(null)
     } else {
       toast.success(`Deactivated: ${trackName}`)
     }
-    setLoading(false)
   }
 
   async function handleDelete() {
@@ -29,15 +32,15 @@ export default function ActiveTrackActions({ trackId, trackName }: Props) {
       setConfirmingDelete(true)
       return
     }
-    setLoading(true)
+    setLoading('delete')
     const result = await deleteTrack(trackId)
     if (result.error) {
       toast.error(result.error)
       setConfirmingDelete(false)
+      setLoading(null)
     } else {
       toast.success(`Deleted: ${trackName}`)
     }
-    setLoading(false)
   }
 
   return (
@@ -48,14 +51,15 @@ export default function ActiveTrackActions({ trackId, trackName }: Props) {
           <div className="flex gap-4">
             <button
               onClick={handleDelete}
-              disabled={loading}
-              className="text-sm font-bold text-red-500 disabled:opacity-50 transition-opacity hover:opacity-60 active:scale-95 py-2"
+              disabled={busy}
+              className="text-sm font-bold text-red-500 disabled:opacity-50 transition-opacity hover:opacity-60 active:scale-95 py-2 flex items-center gap-1.5"
             >
-              Yes, delete
+              {loading === 'delete' && <Spinner />}
+              {loading === 'delete' ? 'Deleting' : 'Yes, delete'}
             </button>
             <button
               onClick={() => setConfirmingDelete(false)}
-              disabled={loading}
+              disabled={busy}
               className="text-sm text-gray-400 disabled:opacity-50 transition-opacity hover:opacity-60 py-2"
             >
               Cancel
@@ -66,15 +70,16 @@ export default function ActiveTrackActions({ trackId, trackName }: Props) {
         <div className="flex gap-4">
           <button
             onClick={handleDeactivate}
-            disabled={loading}
-            className="text-sm font-bold disabled:opacity-50 transition-opacity hover:opacity-60 active:scale-95 py-2"
+            disabled={busy}
+            className="text-sm font-bold disabled:opacity-50 transition-opacity hover:opacity-60 active:scale-95 py-2 flex items-center gap-1.5"
           >
-            Deactivate
+            {loading === 'deactivate' && <Spinner />}
+            {loading === 'deactivate' ? 'Deactivating' : 'Deactivate'}
           </button>
           <button
             onClick={handleDelete}
-            disabled={loading}
-            className="text-sm text-red-500 disabled:opacity-50 transition-opacity hover:opacity-60 active:scale-95 py-2"
+            disabled={busy}
+            className="text-sm text-red-500 disabled:opacity-50 transition-opacity hover:opacity-60 active:scale-95 py-2 flex items-center gap-1.5"
           >
             Delete
           </button>
