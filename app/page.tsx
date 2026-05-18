@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { createServiceClient } from '@/lib/supabase/server'
 import AlbumArt from '@/components/AlbumArt'
 import AudioPlayer from '@/components/AudioPlayer'

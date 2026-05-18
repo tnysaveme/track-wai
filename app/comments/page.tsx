@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { ArrowLeft } from 'lucide-react'
 import { createServiceClient } from '@/lib/supabase/server'
 import AddCommentModal from '@/components/AddCommentModal'
