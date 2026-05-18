@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createServiceClient } from '@/lib/supabase/server'
+import { createAnonClient } from '@/lib/supabase/server'
 import { commentRatelimit, getIp } from '@/lib/ratelimit'
 
 /** Characters that should never appear in user-submitted text */
@@ -34,7 +34,7 @@ export async function addComment(
   const { success } = await commentRatelimit.limit(`${ip}:${trackId}`)
   if (!success) return { error: 'Too many comments. Please wait a while before posting again.' }
 
-  const supabase = createServiceClient()
+  const supabase = createAnonClient()
 
   // Verify the track exists and is currently active before accepting the comment
   const { data: track, error: trackError } = await supabase

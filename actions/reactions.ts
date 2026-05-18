@@ -1,6 +1,6 @@
 'use server'
 
-import { createServiceClient } from '@/lib/supabase/server'
+import { createAnonClient } from '@/lib/supabase/server'
 import { reactionRatelimit, getIp } from '@/lib/ratelimit'
 
 // Note: we intentionally do NOT call revalidatePath() here.
@@ -20,7 +20,7 @@ export async function likeTrack(trackId: string): Promise<{ error?: string }> {
   const limited = await checkReactionRateLimit()
   if (limited) return limited
 
-  const supabase = createServiceClient()
+  const supabase = createAnonClient()
   const { error } = await supabase.rpc('increment_likes', { track_id: trackId })
   if (error) {
     console.error('[likeTrack] rpc failed:', error)
@@ -33,7 +33,7 @@ export async function unlikeTrack(trackId: string): Promise<{ error?: string }> 
   const limited = await checkReactionRateLimit()
   if (limited) return limited
 
-  const supabase = createServiceClient()
+  const supabase = createAnonClient()
   const { error } = await supabase.rpc('decrement_likes', { track_id: trackId })
   if (error) {
     console.error('[unlikeTrack] rpc failed:', error)
@@ -46,7 +46,7 @@ export async function dislikeTrack(trackId: string): Promise<{ error?: string }>
   const limited = await checkReactionRateLimit()
   if (limited) return limited
 
-  const supabase = createServiceClient()
+  const supabase = createAnonClient()
   const { error } = await supabase.rpc('increment_dislikes', { track_id: trackId })
   if (error) {
     console.error('[dislikeTrack] rpc failed:', error)
@@ -59,7 +59,7 @@ export async function undislikeTrack(trackId: string): Promise<{ error?: string 
   const limited = await checkReactionRateLimit()
   if (limited) return limited
 
-  const supabase = createServiceClient()
+  const supabase = createAnonClient()
   const { error } = await supabase.rpc('decrement_dislikes', { track_id: trackId })
   if (error) {
     console.error('[undislikeTrack] rpc failed:', error)

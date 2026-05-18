@@ -7,6 +7,7 @@
 jest.mock('@/lib/env', () => ({
   env: {
     NEXT_PUBLIC_SUPABASE_URL: 'http://localhost:54321',
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key',
     SUPABASE_SERVICE_ROLE_KEY: 'test-service-key',
     ADMIN_PASSWORD: 'test-password',
   },
@@ -17,7 +18,7 @@ jest.mock('next/cache', () => ({
 }))
 
 jest.mock('@/lib/supabase/server', () => ({
-  createServiceClient: jest.fn(),
+  createAnonClient: jest.fn(),
 }))
 
 jest.mock('@/lib/ratelimit', () => ({
@@ -28,7 +29,7 @@ jest.mock('@/lib/ratelimit', () => ({
 // ── Imports (after mocks) ────────────────────────────────────────────────────
 
 import { addComment } from '@/actions/comments'
-import { createServiceClient } from '@/lib/supabase/server'
+import { createAnonClient } from '@/lib/supabase/server'
 import { commentRatelimit } from '@/lib/ratelimit'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -49,7 +50,7 @@ beforeEach(() => {
   tracksBuilder.eq = () => tracksBuilder
   tracksBuilder.maybeSingle = mockMaybeSingle
 
-  ;(createServiceClient as jest.Mock).mockReturnValue({
+  ;(createAnonClient as jest.Mock).mockReturnValue({
     from: (table: string) =>
       table === 'tracks' ? tracksBuilder : { insert: mockInsert },
   })
