@@ -23,6 +23,7 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-screen bg-white p-8">
+      <RealtimeTrackRefresh />
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">{track?.item_type === 'album' ? 'Album Wai' : 'Track Wai'}</h1>
         <InfoModal />
@@ -34,7 +35,6 @@ export default async function HomePage() {
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center min-h-[80vh] gap-6 pt-12 sm:pt-24">
-          <RealtimeTrackRefresh trackId={track.id} />
 
           <AlbumArt
             src={track.itunes_album_art_url}

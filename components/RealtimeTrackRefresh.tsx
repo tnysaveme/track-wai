@@ -7,11 +7,7 @@ import { supabaseBrowser } from '@/lib/supabase/client'
 // Unique suffix per module load — avoids channel name collisions across tabs
 const CHANNEL_ID = `active-track-change-${crypto.randomUUID()}`
 
-type Props = {
-  trackId: string
-}
-
-export default function RealtimeTrackRefresh({ trackId }: Props) {
+export default function RealtimeTrackRefresh() {
   const router = useRouter()
   const routerRef = useRef(router)
   routerRef.current = router
