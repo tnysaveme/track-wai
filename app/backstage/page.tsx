@@ -1,4 +1,3 @@
-import { cookies } from 'next/headers'
 import Image from 'next/image'
 import { createServiceClient } from '@/lib/supabase/server'
 import AdminPasswordGate from '@/components/AdminPasswordGate'
@@ -6,14 +5,11 @@ import TrackSearchForm from '@/components/TrackSearchForm'
 import TrackHistoryActions from '@/components/TrackHistoryActions'
 import ActiveTrackActions from '@/components/ActiveTrackActions'
 import AdminActiveTrackStats from '@/components/AdminActiveTrackStats'
+import { verifyAdminSession, logoutAdmin } from '@/actions/admin'
 
 export default async function BackstagePage() {
-  const cookieStore = await cookies()
-  const session = cookieStore.get('admin_session')
-
-  if (!session || session.value !== 'authenticated') {
-    return <AdminPasswordGate />
-  }
+  const isAdmin = await verifyAdminSession()
+  if (!isAdmin) return <AdminPasswordGate />
 
   const supabase = createServiceClient()
 
@@ -31,7 +27,14 @@ export default async function BackstagePage() {
 
   return (
     <main className="min-h-screen bg-white p-8 max-w-2xl mx-auto">
-      <h1 className="text-xl font-bold mb-10">Track Wai — Admin</h1>
+      <div className="flex items-center justify-between mb-10">
+        <h1 className="text-xl font-bold">Track Wai — Admin</h1>
+        <form action={logoutAdmin}>
+          <button type="submit" className="text-sm text-gray-400 transition-opacity hover:opacity-60">
+            Log out
+          </button>
+        </form>
+      </div>
 
       <section className="mb-10">
         <h2 className="font-bold text-lg mb-4">Now Playing</h2>

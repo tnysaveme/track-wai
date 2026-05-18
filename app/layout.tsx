@@ -25,6 +25,16 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: 'Track Wai',
   description: 'What are we listening to?',
+  openGraph: {
+    title: 'Track Wai',
+    description: 'What are we listening to?',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Track Wai',
+    description: 'What are we listening to?',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

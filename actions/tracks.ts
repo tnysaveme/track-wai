@@ -1,24 +1,17 @@
 'use server'
 
-import { cookies } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { createServiceClient } from '@/lib/supabase/server'
 import { searchItunes, type ItunesResult } from '@/lib/itunes'
 import { searchSpotify } from '@/lib/spotify'
-// Notify all connected clients that the active track has changed.
-// Inserts a row into track_events (anon can always read it), which triggers
-// a postgres_changes INSERT event that is reliably delivered to subscribers.
-// This avoids the RLS problem where UPDATE events for deactivated tracks are
-// silently dropped (the updated row becomes is_active=false, which violates
-// the anon read policy, so Supabase never sends the event).
+import { verifyAdminSession } from '@/actions/admin'
+
 async function signalTrackChange(eventType: string) {
   const supabase = createServiceClient()
   await supabase.from('track_events').insert({ event_type: eventType })
-}
-
-async function requireAdminSession(): Promise<boolean> {
-  const cookieStore = await cookies()
-  return cookieStore.get('admin_session')?.value === 'authenticated'
+  // Prune signals older than 1 hour — they're just notification triggers
+  const cutoff = new Date(Date.now() - 60 * 60 * 1000).toISOString()
+  await supabase.from('track_events').delete().lt('created_at', cutoff)
 }
 
 export type SearchTracksResult =
@@ -45,7 +38,7 @@ export async function setActiveTrack(
   itemType: 'song' | 'album',
   query: string,
 ): Promise<{ error?: string }> {
-  if (!(await requireAdminSession())) return { error: 'Unauthorized.' }
+  if (!(await verifyAdminSession())) return { error: 'Unauthorized.' }
 
   // Validate incoming iTunes result fields
   if (!itunesResult.trackName?.trim() || !itunesResult.artistName?.trim()) {
@@ -90,7 +83,7 @@ export async function setActiveTrack(
 }
 
 export async function deactivateActiveTrack(trackId: string): Promise<{ error?: string }> {
-  if (!(await requireAdminSession())) return { error: 'Unauthorized.' }
+  if (!(await verifyAdminSession())) return { error: 'Unauthorized.' }
   if (!trackId?.trim()) return { error: 'Invalid track ID.' }
 
   const supabase = createServiceClient()
@@ -113,7 +106,7 @@ export async function deactivateActiveTrack(trackId: string): Promise<{ error?: 
 }
 
 export async function deleteTrack(trackId: string): Promise<{ error?: string }> {
-  if (!(await requireAdminSession())) return { error: 'Unauthorized.' }
+  if (!(await verifyAdminSession())) return { error: 'Unauthorized.' }
   if (!trackId?.trim()) return { error: 'Invalid track ID.' }
 
   const supabase = createServiceClient()
@@ -132,7 +125,7 @@ export async function deleteTrack(trackId: string): Promise<{ error?: string }> 
 }
 
 export async function reactivateTrack(trackId: string): Promise<{ error?: string }> {
-  if (!(await requireAdminSession())) return { error: 'Unauthorized.' }
+  if (!(await verifyAdminSession())) return { error: 'Unauthorized.' }
   if (!trackId?.trim()) return { error: 'Invalid track ID.' }
 
   const supabase = createServiceClient()

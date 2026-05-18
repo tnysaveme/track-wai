@@ -1,13 +1,7 @@
 import 'server-only'
 import { Ratelimit } from '@upstash/ratelimit'
-import { Redis } from '@upstash/redis'
 import { headers } from 'next/headers'
-import { env } from '@/lib/env'
-
-const redis = new Redis({
-  url: env.UPSTASH_REDIS_REST_URL,
-  token: env.UPSTASH_REDIS_REST_TOKEN,
-})
+import { redis } from '@/lib/redis'
 
 /**
  * 5 comments per IP per hour.
