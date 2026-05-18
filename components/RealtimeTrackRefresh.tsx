@@ -17,24 +17,29 @@ export default function RealtimeTrackRefresh({ trackId }: Props) {
   routerRef.current = router
 
   useEffect(() => {
-    const channel = supabaseBrowser
+    const refresh = () => routerRef.current.refresh()
+
+    // postgres_changes covers INSERT (new track set) and UPDATE on rows still
+    // visible to the anon key (e.g. likes/dislikes changes on the active track).
+    const pgChannel = supabaseBrowser
       .channel(CHANNEL_ID)
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'tracks' },
-        () => { routerRef.current.refresh() },
-      )
-      .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'tracks' },
-        () => { routerRef.current.refresh() },
-      )
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'tracks' }, refresh)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'tracks' }, refresh)
+      .subscribe()
+
+    // Broadcast channel receives signals from server actions for mutations where
+    // the updated row becomes invisible to anon (deactivation flips is_active=false,
+    // which violates the RLS policy, so the postgres UPDATE event is never delivered).
+    const broadcastChannel = supabaseBrowser
+      .channel('track-events')
+      .on('broadcast', { event: 'track:changed' }, refresh)
       .subscribe()
 
     return () => {
-      supabaseBrowser.removeChannel(channel)
+      supabaseBrowser.removeChannel(pgChannel)
+      supabaseBrowser.removeChannel(broadcastChannel)
     }
-  }, []) // stable — channel doesn't depend on trackId or router reference
+  }, []) // stable — channels don't depend on trackId or router reference
 
   return null
 }

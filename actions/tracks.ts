@@ -5,6 +5,29 @@ import { revalidatePath } from 'next/cache'
 import { createServiceClient } from '@/lib/supabase/server'
 import { searchItunes, type ItunesResult } from '@/lib/itunes'
 import { searchSpotify } from '@/lib/spotify'
+import { env } from '@/lib/env'
+
+// Notify all connected clients that the active track has changed.
+// Uses the Supabase HTTP Broadcast API so the signal is sent even when
+// the updated row is no longer visible to anon subscribers (RLS blocks
+// UPDATE events for rows that become is_active=false after the write).
+async function broadcastTrackChange() {
+  try {
+    await fetch(`${env.NEXT_PUBLIC_SUPABASE_URL}/realtime/v1/api/broadcast`, {
+      method: 'POST',
+      headers: {
+        apikey: env.SUPABASE_SERVICE_ROLE_KEY,
+        Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messages: [{ topic: 'realtime:track-events', event: 'track:changed', payload: {} }],
+      }),
+    })
+  } catch (err) {
+    console.error('[broadcastTrackChange] failed:', err)
+  }
+}
 
 async function requireAdminSession(): Promise<boolean> {
   const cookieStore = await cookies()
@@ -75,6 +98,7 @@ export async function setActiveTrack(
   revalidatePath('/')
   revalidatePath('/comments')
   revalidatePath('/backstage')
+  await broadcastTrackChange()
   return {}
 }
 
@@ -97,6 +121,7 @@ export async function deactivateActiveTrack(trackId: string): Promise<{ error?: 
   revalidatePath('/')
   revalidatePath('/comments')
   revalidatePath('/backstage')
+  await broadcastTrackChange()
   return {}
 }
 
@@ -115,6 +140,7 @@ export async function deleteTrack(trackId: string): Promise<{ error?: string }> 
   revalidatePath('/')
   revalidatePath('/comments')
   revalidatePath('/backstage')
+  await broadcastTrackChange()
   return {}
 }
 
@@ -133,5 +159,6 @@ export async function reactivateTrack(trackId: string): Promise<{ error?: string
   revalidatePath('/')
   revalidatePath('/comments')
   revalidatePath('/backstage')
+  await broadcastTrackChange()
   return {}
 }
