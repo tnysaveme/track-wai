@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createServiceClient } from '@/lib/supabase/server'
+import { commentRatelimit, getIp } from '@/lib/ratelimit'
 
 /** Characters that should never appear in user-submitted text */
 const CONTROL_CHAR_RE = /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g
@@ -27,6 +28,11 @@ export async function addComment(
   if (!cleanName || !cleanBody) return { error: 'Name and comment are required.' }
   if (cleanName.length > 100) return { error: 'Name must be 100 characters or fewer.' }
   if (cleanBody.length > 200) return { error: 'Comment must be 200 characters or fewer.' }
+
+  // Rate limit: 5 comments per IP per hour, budgeted per track
+  const ip = await getIp()
+  const { success } = await commentRatelimit.limit(`${ip}:${trackId}`)
+  if (!success) return { error: 'Too many comments. Please wait a while before posting again.' }
 
   const supabase = createServiceClient()
 

@@ -16,6 +16,11 @@ jest.mock('@/lib/supabase/server', () => ({
   createServiceClient: jest.fn(),
 }))
 
+jest.mock('@/lib/ratelimit', () => ({
+  reactionRatelimit: { limit: jest.fn().mockResolvedValue({ success: true }) },
+  getIp: jest.fn().mockResolvedValue('127.0.0.1'),
+}))
+
 // ── Imports (after mocks) ────────────────────────────────────────────────────
 
 import { likeTrack, unlikeTrack, dislikeTrack, undislikeTrack } from '@/actions/reactions'

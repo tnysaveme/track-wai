@@ -3,8 +3,14 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { env } from '@/lib/env'
+import { adminRatelimit, getIp } from '@/lib/ratelimit'
 
 export async function checkAdminPassword(formData: FormData) {
+  // Rate limit before touching the password — prevent brute force
+  const ip = await getIp()
+  const { success } = await adminRatelimit.limit(ip)
+  if (!success) return { error: 'Too many attempts. Try again in 15 minutes.' }
+
   const password = formData.get('password') as string
 
   if (password !== env.ADMIN_PASSWORD) {

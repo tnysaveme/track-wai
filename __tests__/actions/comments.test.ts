@@ -20,10 +20,16 @@ jest.mock('@/lib/supabase/server', () => ({
   createServiceClient: jest.fn(),
 }))
 
+jest.mock('@/lib/ratelimit', () => ({
+  commentRatelimit: { limit: jest.fn().mockResolvedValue({ success: true }) },
+  getIp: jest.fn().mockResolvedValue('127.0.0.1'),
+}))
+
 // ── Imports (after mocks) ────────────────────────────────────────────────────
 
 import { addComment } from '@/actions/comments'
 import { createServiceClient } from '@/lib/supabase/server'
+import { commentRatelimit } from '@/lib/ratelimit'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -50,6 +56,15 @@ beforeEach(() => {
 })
 
 // ── Tests ────────────────────────────────────────────────────────────────────
+
+describe('addComment — rate limiting', () => {
+  it('returns error when rate limit is exceeded', async () => {
+    ;(commentRatelimit.limit as jest.Mock).mockResolvedValueOnce({ success: false })
+    const result = await addComment(TRACK_ID, 'Alice', 'Great song!')
+    expect(result.error).toMatch(/Too many comments/)
+    expect(mockInsert).not.toHaveBeenCalled()
+  })
+})
 
 describe('addComment — input validation', () => {
   it('returns error when name is empty', async () => {
