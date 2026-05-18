@@ -5,6 +5,7 @@ import AdminPasswordGate from '@/components/AdminPasswordGate'
 import TrackSearchForm from '@/components/TrackSearchForm'
 import TrackHistoryActions from '@/components/TrackHistoryActions'
 import ActiveTrackActions from '@/components/ActiveTrackActions'
+import AdminActiveTrackStats from '@/components/AdminActiveTrackStats'
 
 export default async function BackstagePage() {
   const cookieStore = await cookies()
@@ -18,7 +19,7 @@ export default async function BackstagePage() {
 
   const { data: activeTrack } = await supabase
     .from('tracks')
-    .select('*')
+    .select('*, comments(count)')
     .eq('is_active', true)
     .single()
 
@@ -51,6 +52,16 @@ export default async function BackstagePage() {
                 <span className="text-xs text-gray-400 capitalize">{activeTrack.item_type}</span>
               </div>
             </div>
+            <AdminActiveTrackStats
+              trackId={activeTrack.id}
+              initialLikes={activeTrack.likes ?? 0}
+              initialDislikes={activeTrack.dislikes ?? 0}
+              initialCommentCount={
+                Array.isArray(activeTrack.comments) && activeTrack.comments[0]
+                  ? (activeTrack.comments[0] as { count: number }).count
+                  : 0
+              }
+            />
             <ActiveTrackActions
               trackId={activeTrack.id}
               trackName={activeTrack.itunes_track_name}
