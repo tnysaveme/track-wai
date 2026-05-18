@@ -2,6 +2,7 @@ import { ArrowLeft } from 'lucide-react'
 import { createServiceClient } from '@/lib/supabase/server'
 import AddCommentModal from '@/components/AddCommentModal'
 import CommentsList from '@/components/CommentsList'
+import RealtimeTrackRefresh from '@/components/RealtimeTrackRefresh'
 import Link from 'next/link'
 
 export default async function CommentsPage() {
@@ -25,6 +26,7 @@ export default async function CommentsPage() {
 
   return (
     <main className="min-h-screen bg-white p-8">
+      <RealtimeTrackRefresh />
       <div className="flex items-center justify-between mb-10">
         <h1 className="text-xl font-bold">Comments</h1>
         <Link href="/" aria-label="Back to home" className="transition-opacity hover:opacity-60">

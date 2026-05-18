@@ -38,10 +38,12 @@ export default function ReactionBar({ trackId, initialLikes, initialDislikes, co
     }
   }, [trackId])
 
-  // Realtime: sync likes/dislikes from DB
+  // Single channel for both reactions (UPDATE on tracks) and comment count
+  // (INSERT on comments). Comments lacks REPLICA IDENTITY FULL so server-side
+  // filtering on track_id silently drops events; we filter client-side instead.
   useEffect(() => {
     const channel = supabaseBrowser
-      .channel(`track-reactions-${trackId}`)
+      .channel(`track-${trackId}`)
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'tracks', filter: `id=eq.${trackId}` },
@@ -52,31 +54,12 @@ export default function ReactionBar({ trackId, initialLikes, initialDislikes, co
           setDislikes(updated.dislikes)
         },
       )
-      .subscribe()
-
-    return () => {
-      supabaseBrowser.removeChannel(channel)
-    }
-  }, [trackId])
-
-  // Realtime: increment comment count on new comment.
-  // We intentionally omit the server-side `filter` option here: Supabase
-  // Realtime can only apply server-side filters on non-PK columns when the
-  // table has REPLICA IDENTITY FULL, which comments does not. Without it the
-  // filtered subscription silently receives no events. Instead we subscribe to
-  // ALL comment inserts and check track_id client-side — payload.new always
-  // contains the full row for INSERT events regardless of replica identity.
-  useEffect(() => {
-    const channel = supabaseBrowser
-      .channel(`track-comments-count-${trackId}`)
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'comments' },
         (payload) => {
           const row = payload.new as { track_id: string }
-          if (row.track_id === trackId) {
-            setCommentCount((c) => c + 1)
-          }
+          if (row.track_id === trackId) setCommentCount((c) => c + 1)
         },
       )
       .subscribe()

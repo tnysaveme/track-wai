@@ -21,10 +21,12 @@ export default function AdminActiveTrackStats({
   const [dislikes, setDislikes] = useState(initialDislikes)
   const [commentCount, setCommentCount] = useState(initialCommentCount)
 
-  // Realtime: sync likes/dislikes from DB
+  // Single channel for reactions (UPDATE on tracks) and comment count (INSERT on
+  // comments). Comments lacks REPLICA IDENTITY FULL so the server-side track_id
+  // filter silently drops events; we filter client-side instead.
   useEffect(() => {
     const channel = supabaseBrowser
-      .channel(`admin-track-reactions-${trackId}`)
+      .channel(`admin-track-${trackId}`)
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'tracks', filter: `id=eq.${trackId}` },
@@ -34,27 +36,12 @@ export default function AdminActiveTrackStats({
           setDislikes(updated.dislikes)
         },
       )
-      .subscribe()
-
-    return () => {
-      supabaseBrowser.removeChannel(channel)
-    }
-  }, [trackId])
-
-  // Realtime: increment comment count on new comment.
-  // Same approach as ReactionBar — no server-side filter because comments lacks
-  // REPLICA IDENTITY FULL; we filter client-side on payload.new.track_id instead.
-  useEffect(() => {
-    const channel = supabaseBrowser
-      .channel(`admin-track-comments-count-${trackId}`)
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'comments' },
         (payload) => {
           const row = payload.new as { track_id: string }
-          if (row.track_id === trackId) {
-            setCommentCount((c) => c + 1)
-          }
+          if (row.track_id === trackId) setCommentCount((c) => c + 1)
         },
       )
       .subscribe()

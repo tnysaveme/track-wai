@@ -27,8 +27,9 @@ export default function CommentsList({ trackId, initialComments }: Props) {
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'comments', filter: `track_id=eq.${trackId}` },
         (payload) => {
-          const newComment = payload.new as Comment
-          setComments((prev) => [newComment, ...prev])
+          const row = payload.new as Comment & { track_id: string }
+          if (row.track_id !== trackId) return
+          setComments((prev) => [row, ...prev])
         },
       )
       .subscribe()
