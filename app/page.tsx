@@ -39,6 +39,7 @@ export default async function HomePage() {
         <div className="flex flex-col items-center justify-center min-h-[80vh] gap-6 pt-12 sm:pt-24">
 
           <AlbumArt
+            key={track.id}
             src={track.itunes_album_art_url}
             alt={`${track.itunes_track_name} album art`}
             spotifyUrl={track.spotify_url}

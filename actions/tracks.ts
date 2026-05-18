@@ -8,7 +8,11 @@ import { verifyAdminSession } from '@/actions/admin'
 
 async function signalTrackChange(eventType: string) {
   const supabase = createServiceClient()
-  await supabase.from('track_events').insert({ event_type: eventType })
+  const { error } = await supabase.from('track_events').insert({ event_type: eventType })
+  if (error) {
+    console.error('[signalTrackChange] insert failed — realtime signal not sent:', error)
+    return
+  }
   // Prune signals older than 1 hour — they're just notification triggers
   const cutoff = new Date(Date.now() - 60 * 60 * 1000).toISOString()
   await supabase.from('track_events').delete().lt('created_at', cutoff)

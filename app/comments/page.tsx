@@ -38,8 +38,8 @@ export default async function CommentsPage() {
 
       {track ? (
         <>
-          <CommentsList trackId={track.id} initialComments={initialComments} />
-          <AddCommentModal trackId={track.id} />
+          <CommentsList key={track.id} trackId={track.id} initialComments={initialComments} />
+          <AddCommentModal key={track.id} trackId={track.id} />
         </>
       ) : (
         <div className="flex items-center justify-center min-h-[60vh]">
