@@ -113,13 +113,14 @@ export default function AlbumArt({ src, alt, spotifyUrl, appleMusicUrl }: Props)
         aria-hidden={!showPicker}
       >
         <div
-          className="flex bg-white border border-black divide-x divide-black pointer-events-auto"
+          className="flex bg-background border border-black divide-x divide-black pointer-events-auto"
         >
           <a
             href={spotifyUrl}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => setShowPicker(false)}
+            tabIndex={showPicker ? undefined : -1}
             className="flex-1 flex items-center justify-center gap-2.5 py-3.5
               text-[10px] font-bold tracking-[0.18em] uppercase
               transition-colors duration-150 hov:bg-black hov:text-white"
@@ -133,6 +134,7 @@ export default function AlbumArt({ src, alt, spotifyUrl, appleMusicUrl }: Props)
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setShowPicker(false)}
+              tabIndex={showPicker ? undefined : -1}
               className="flex-1 flex items-center justify-center gap-2.5 py-3.5
                 text-[10px] font-bold tracking-[0.18em] uppercase
                 transition-colors duration-150 hov:bg-black hov:text-white"

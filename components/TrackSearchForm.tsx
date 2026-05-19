@@ -166,7 +166,7 @@ export default function TrackSearchForm() {
               onChange={(e) => setQuery(e.target.value)}
               placeholder={`Search for a ${itemType}...`}
               required
-              className="border-b border-black outline-none py-2 text-base flex-1"
+              className="border-b border-black outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 py-2 text-base flex-1"
             />
             <button type="submit" disabled={searching} className="font-bold text-sm disabled:opacity-50 py-2 shrink-0 flex items-center gap-1.5">
               {searching && <Spinner />}
@@ -182,7 +182,7 @@ export default function TrackSearchForm() {
             onChange={(e) => setLinkUrl(e.target.value)}
             placeholder="https://music.apple.com/..."
             required
-            className="border-b border-black outline-none py-2 text-base flex-1"
+            className="border-b border-black outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 py-2 text-base flex-1"
             inputMode="url"
             autoComplete="off"
           />
@@ -211,7 +211,7 @@ export default function TrackSearchForm() {
                 <p className="text-sm font-bold">{r.artistName}</p>
                 <p className="text-sm">{r.trackName}</p>
                 {!r.previewUrl && itemType === 'song' && (
-                  <p className="text-xs text-gray-400">No preview available</p>
+                  <p className="text-xs text-gray-500">No preview available</p>
                 )}
               </div>
             </button>

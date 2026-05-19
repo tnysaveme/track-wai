@@ -1,7 +1,7 @@
 export default function BackstageLoading() {
   return (
     <main
-      className="min-h-screen bg-white p-8 max-w-2xl mx-auto"
+      className="min-h-screen bg-background p-8 max-w-2xl mx-auto"
       aria-busy="true"
       aria-label="Loading admin"
     >
@@ -43,7 +43,7 @@ export default function BackstageLoading() {
         <div className="skeleton h-5 w-16 mb-4" />
         <div className="flex flex-col gap-5">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="flex items-start gap-3 pl-3">
+            <div key={i} className="flex items-start gap-3">
               <div className="skeleton w-12 h-12 shrink-0 mt-0.5" />
               <div className="flex flex-col gap-2 flex-1">
                 <div className="skeleton h-3.5 w-28" />

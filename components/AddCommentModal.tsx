@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { X } from 'lucide-react'
 import { addComment } from '@/actions/comments'
 import { Spinner } from '@/components/Spinner'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 type Props = {
   trackId: string
@@ -14,6 +15,10 @@ const CLOSE_DURATION = 180 // ms — matches modal-panel-out duration
 
 export default function AddCommentModal({ trackId }: Props) {
   const [modal, setModal] = useState<ModalState>('closed')
+  const panelRef = useRef<HTMLDivElement>(null)
+
+  useFocusTrap(panelRef, modal === 'open')
+
   const [name, setName] = useState('')
   const [body, setBody] = useState('')
   const [error, setError] = useState('')
@@ -81,12 +86,13 @@ export default function AddCommentModal({ trackId }: Props) {
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-title"
-            className={`modal-panel bg-white p-8 mx-4 sm:mx-0 w-full max-w-md relative shadow-2xl ${isClosing ? 'is-closing' : 'is-open'}`}
+            ref={panelRef}
+            className={`modal-panel bg-background p-8 mx-4 sm:mx-0 w-full max-w-md relative shadow-2xl ${isClosing ? 'is-closing' : 'is-open'}`}
             style={{ paddingBottom: 'max(2rem, calc(2rem + env(safe-area-inset-bottom)))' }}
           >
             <button
               onClick={closeModal}
-              className="absolute top-4 right-4 transition-opacity hover:opacity-60"
+              className="absolute top-2 right-2 p-2 transition-opacity hover:opacity-60"
               aria-label="Close"
             >
               <X size={20} />
@@ -105,7 +111,8 @@ export default function AddCommentModal({ trackId }: Props) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="w-full border-b border-black outline-none py-1 text-base"
+                  data-autofocus
+                  className="w-full border-b border-black outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 py-1 text-base"
                   placeholder="Your name"
                 />
               </div>
@@ -126,7 +133,7 @@ export default function AddCommentModal({ trackId }: Props) {
                   required
                   maxLength={200}
                   rows={3}
-                  className="w-full border-b border-black outline-none py-1 text-base resize-none"
+                  className="w-full border-b border-black outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 py-1 text-base resize-none"
                   placeholder="What do you think?"
                 />
               </div>

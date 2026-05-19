@@ -1,6 +1,6 @@
 export default function Loading() {
   return (
-    <main className="min-h-screen bg-white p-8" aria-busy="true" aria-label="Loading">
+    <main className="min-h-screen bg-background p-8" aria-busy="true" aria-label="Loading">
       {/* Header — mirrors app/page.tsx */}
       <div className="flex items-center justify-between">
         <div className="skeleton h-6 w-24" />

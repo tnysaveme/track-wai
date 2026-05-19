@@ -24,7 +24,7 @@ export default async function HomePage() {
     : 0
 
   return (
-    <main className="min-h-screen bg-white p-8">
+    <main className="min-h-screen bg-background p-8">
       <RealtimeTrackRefresh />
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">{track?.item_type === 'album' ? 'Album Wai' : 'Track Wai'}</h1>

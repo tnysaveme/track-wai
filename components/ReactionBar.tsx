@@ -180,6 +180,7 @@ export default function ReactionBar({ trackId, initialLikes, initialDislikes, co
         onClick={handleLike}
         className="flex flex-col items-center gap-1 p-2 transition duration-150 ease-out active:scale-90"
         aria-label="Like"
+        aria-pressed={vote === 'liked'}
       >
         <Heart size={24} fill={vote === 'liked' ? 'red' : 'none'} stroke={vote === 'liked' ? 'red' : 'currentColor'} strokeWidth={vote === 'liked' ? 0 : 2} />
         <NumberDisplay value={likes} className="text-sm" />
@@ -194,6 +195,7 @@ export default function ReactionBar({ trackId, initialLikes, initialDislikes, co
         onClick={handleDislike}
         className="flex flex-col items-center gap-1 p-2 transition duration-150 ease-out active:scale-90"
         aria-label="Dislike"
+        aria-pressed={vote === 'disliked'}
       >
         <ThumbsDown size={24} fill={vote === 'disliked' ? 'black' : 'none'} strokeWidth={vote === 'disliked' ? 0 : 2} />
         <NumberDisplay value={dislikes} className="text-sm" />

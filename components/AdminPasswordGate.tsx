@@ -23,15 +23,17 @@ export default function AdminPasswordGate() {
   }
 
   return (
-    <main className="min-h-screen bg-white p-8 flex flex-col justify-center items-center">
+    <main className="min-h-screen bg-background p-8 flex flex-col justify-center items-center">
       <h1 className="text-xl font-bold mb-8">Track Wai</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full max-w-xs">
+        <label htmlFor="password" className="sr-only">Password</label>
         <input
+          id="password"
           type="password"
           name="password"
           required
           autoComplete="current-password"
-          className="border-b border-black outline-none py-2 text-base"
+          className="border-b border-black outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-0 py-2 text-base"
           placeholder="Password"
           autoFocus
           disabled={loading}

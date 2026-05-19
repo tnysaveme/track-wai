@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export default function NotFound() {
   return (
-    <main className="min-h-screen bg-white p-8">
+    <main className="min-h-screen bg-background p-8">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">Track Wai</h1>
       </div>

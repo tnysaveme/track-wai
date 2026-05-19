@@ -9,7 +9,7 @@ export default function CommentsLoading() {
   ]
 
   return (
-    <main className="min-h-screen bg-white p-8" aria-busy="true" aria-label="Loading comments">
+    <main className="min-h-screen bg-background p-8" aria-busy="true" aria-label="Loading comments">
       {/* Header — mirrors app/comments/page.tsx */}
       <div className="flex items-center justify-between mb-10">
         <div className="skeleton h-6 w-24" />

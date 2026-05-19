@@ -1,13 +1,17 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Info, X } from 'lucide-react'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 type ModalState = 'closed' | 'open' | 'closing'
 const CLOSE_DURATION = 180 // ms — matches modal-panel-out duration
 
 export default function InfoModal() {
   const [modal, setModal] = useState<ModalState>('closed')
+  const panelRef = useRef<HTMLDivElement>(null)
+
+  useFocusTrap(panelRef, modal === 'open')
 
   function openModal() {
     setModal('open')
@@ -37,7 +41,7 @@ export default function InfoModal() {
       <button
         onClick={openModal}
         aria-label="How this works"
-        className="transition-opacity hover:opacity-60 active:scale-95"
+        className="p-2 -m-2 transition-opacity hover:opacity-60 active:scale-95"
       >
         <Info size={18} />
       </button>
@@ -51,11 +55,12 @@ export default function InfoModal() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="info-modal-title"
-            className={`modal-panel bg-white p-8 mx-4 sm:mx-0 w-full max-w-sm relative shadow-2xl ${isClosing ? 'is-closing' : 'is-open'}`}
+            ref={panelRef}
+            className={`modal-panel bg-background p-8 mx-4 sm:mx-0 w-full max-w-sm relative shadow-2xl ${isClosing ? 'is-closing' : 'is-open'}`}
           >
             <button
               onClick={closeModal}
-              className="absolute top-4 right-4 transition-opacity hover:opacity-60"
+              className="absolute top-2 right-2 p-2 transition-opacity hover:opacity-60"
               aria-label="Close"
             >
               <X size={18} />

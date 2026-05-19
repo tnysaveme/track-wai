@@ -26,11 +26,11 @@ export default async function BackstagePage() {
     .order('deactivated_at', { ascending: false })
 
   return (
-    <main className="min-h-screen bg-white p-8 max-w-2xl mx-auto">
+    <main className="min-h-screen bg-background p-8 max-w-2xl mx-auto">
       <div className="flex items-center justify-between mb-10">
         <h1 className="text-xl font-bold">Track Wai — Admin</h1>
         <form action={logoutAdmin}>
-          <button type="submit" className="text-sm text-gray-400 transition-opacity hover:opacity-60">
+          <button type="submit" className="text-sm text-gray-500 transition-opacity hover:opacity-60">
             Log out
           </button>
         </form>
@@ -52,7 +52,7 @@ export default async function BackstagePage() {
               <div>
                 <p className="font-bold text-sm">{activeTrack.itunes_artist_name}</p>
                 <p className="text-sm">{activeTrack.itunes_track_name}</p>
-                <span className="text-xs text-gray-400 capitalize">{activeTrack.item_type}</span>
+                <span className="text-xs text-gray-500 capitalize">{activeTrack.item_type}</span>
               </div>
             </div>
             <AdminActiveTrackStats
@@ -97,7 +97,7 @@ export default async function BackstagePage() {
                 : '—'
 
               return (
-                <div key={track.id} className="flex items-start gap-3 pl-3 border-l-2 border-transparent transition-[border-color,opacity] duration-200 hov:border-black hov:opacity-80">
+                <div key={track.id} className="flex items-start gap-3 transition-opacity duration-200 hov:opacity-80">
                   <Image
                     src={track.itunes_album_art_url}
                     alt={track.itunes_track_name}
@@ -109,7 +109,7 @@ export default async function BackstagePage() {
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-sm">{track.itunes_artist_name}</p>
                     <p className="text-sm">{track.itunes_track_name}</p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-gray-500">
                       {track.likes} likes · {track.dislikes} dislikes · {commentCount} comments · {dateStr}
                     </p>
                     <TrackHistoryActions

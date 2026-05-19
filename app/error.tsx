@@ -13,7 +13,7 @@ export default function Error({ error, reset }: Props) {
   }, [error])
 
   return (
-    <main className="min-h-screen bg-white p-8 flex flex-col items-center justify-center gap-4">
+    <main className="min-h-screen bg-background p-8 flex flex-col items-center justify-center gap-4">
       <p className="text-sm text-gray-500">Something went wrong.</p>
       <button
         onClick={reset}

@@ -68,17 +68,17 @@ export default function AdminActiveTrackStats({
       <span className="flex items-center gap-1.5 text-gray-600">
         <Heart size={14} className="shrink-0" />
         <span className="font-bold text-black tabular-nums">{likes}</span>
-        <span className="text-gray-400">likes</span>
+        <span className="text-gray-500">likes</span>
       </span>
       <span className="flex items-center gap-1.5 text-gray-600">
         <ThumbsDown size={14} className="shrink-0" />
         <span className="font-bold text-black tabular-nums">{dislikes}</span>
-        <span className="text-gray-400">dislikes</span>
+        <span className="text-gray-500">dislikes</span>
       </span>
       <span className="flex items-center gap-1.5 text-gray-600">
         <MessageCircle size={14} className="shrink-0" />
         <span className="font-bold text-black tabular-nums">{commentCount}</span>
-        <span className="text-gray-400">comments</span>
+        <span className="text-gray-500">comments</span>
       </span>
     </div>
   )

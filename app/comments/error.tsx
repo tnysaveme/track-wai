@@ -15,10 +15,10 @@ export default function CommentsError({ error, reset }: Props) {
   }, [error])
 
   return (
-    <main className="min-h-screen bg-white p-8">
+    <main className="min-h-screen bg-background p-8">
       <div className="flex items-center justify-between mb-10">
         <h1 className="text-xl font-bold">Comments</h1>
-        <Link href="/" aria-label="Back to home" className="transition-opacity hover:opacity-60">
+        <Link href="/" aria-label="Back to home" className="p-2 -mr-2 transition-opacity hover:opacity-60">
           <ArrowLeft size={20} />
         </Link>
       </div>
