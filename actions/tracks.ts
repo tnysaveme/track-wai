@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createServiceClient } from '@/lib/supabase/server'
-import { searchItunes, type ItunesResult } from '@/lib/itunes'
+import { searchItunes, lookupItunes, parseAppleMusicUrl, type ItunesResult } from '@/lib/itunes'
 import { searchSpotify } from '@/lib/spotify'
 import { verifyAdminSession } from '@/actions/admin'
 
@@ -35,6 +35,33 @@ export async function searchTracks(
     return { results }
   } catch {
     return { error: 'Search failed. Please try again.' }
+  }
+}
+
+export type LookupAppleMusicResult =
+  | { result: ItunesResult; itemType: 'song' | 'album'; error?: never }
+  | { result?: never; itemType?: never; error: string }
+
+/**
+ * Look up a single Apple Music URL via the iTunes lookup endpoint. This is
+ * the escape hatch for tracks that exist on Apple Music but aren't indexed
+ * by the iTunes Search API (common for newer / independent releases).
+ */
+export async function lookupAppleMusicUrl(url: string): Promise<LookupAppleMusicResult> {
+  const trimmed = url.trim().slice(0, 500)
+  if (!trimmed) return { error: 'Please paste an Apple Music link.' }
+
+  const parsed = parseAppleMusicUrl(trimmed)
+  if (!parsed) {
+    return { error: 'Not a valid Apple Music link. Expected music.apple.com URL.' }
+  }
+
+  try {
+    const result = await lookupItunes(parsed.id, parsed.entity)
+    if (!result) return { error: 'No match found for that link.' }
+    return { result, itemType: parsed.entity }
+  } catch {
+    return { error: 'Lookup failed. Please try again.' }
   }
 }
 

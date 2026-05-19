@@ -3,39 +3,61 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { toast } from 'sonner'
-import { searchTracks, setActiveTrack } from '@/actions/tracks'
+import { searchTracks, lookupAppleMusicUrl, setActiveTrack } from '@/actions/tracks'
 import type { ItunesResult } from '@/lib/itunes'
 import { Spinner } from '@/components/Spinner'
 
 const PAGE_SIZE = 10
 const MAX_RESULTS = 50
 
+type Mode = 'search' | 'lookup'
+
 export default function TrackSearchForm() {
+  const [mode, setMode] = useState<Mode>('search')
   const [itemType, setItemType] = useState<'song' | 'album'>('song')
+
+  // Search-mode state
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<ItunesResult[]>([])
   const [limit, setLimit] = useState(PAGE_SIZE)
   // The query string that produced the current results — guards "Show more"
   // against the user editing the input after searching
   const [searchedQuery, setSearchedQuery] = useState('')
-  const [selected, setSelected] = useState<ItunesResult | null>(null)
-  const [searchError, setSearchError] = useState('')
   const [searching, setSearching] = useState(false)
   const [loadingMore, setLoadingMore] = useState(false)
+
+  // Lookup-mode state
+  const [linkUrl, setLinkUrl] = useState('')
+  const [lookingUp, setLookingUp] = useState(false)
+
+  // Shared state
+  const [selected, setSelected] = useState<ItunesResult | null>(null)
+  const [error, setError] = useState('')
   const [confirming, setConfirming] = useState(false)
+
+  function clearResults() {
+    setResults([])
+    setSelected(null)
+    setError('')
+  }
+
+  function switchMode(newMode: Mode) {
+    if (newMode === mode) return
+    setMode(newMode)
+    clearResults()
+  }
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault()
     setSearching(true)
-    setSearchError('')
+    setError('')
     setResults([])
     setSelected(null)
     setLimit(PAGE_SIZE)
 
     const res = await searchTracks(query, itemType, PAGE_SIZE)
-
     if (res.error) {
-      setSearchError(res.error)
+      setError(res.error)
     } else {
       setResults(res.results ?? [])
       setSearchedQuery(query)
@@ -54,67 +76,124 @@ export default function TrackSearchForm() {
     setLoadingMore(false)
   }
 
-  // iTunes returned a full page → likely more available. If it returned fewer
-  // than requested, we've hit the end.
-  const canLoadMore = results.length >= limit && limit < MAX_RESULTS
+  async function handleLookup(e: React.FormEvent) {
+    e.preventDefault()
+    setLookingUp(true)
+    setError('')
+    setResults([])
+    setSelected(null)
+
+    const res = await lookupAppleMusicUrl(linkUrl)
+    if (res.error) {
+      setError(res.error)
+    } else if (res.result) {
+      setResults([res.result])
+      setSelected(res.result)
+      setItemType(res.itemType)
+    }
+    setLookingUp(false)
+  }
 
   async function handleConfirm() {
     if (!selected) return
     setConfirming(true)
-    setSearchError('')
+    setError('')
 
-    const result = await setActiveTrack(selected, itemType, query)
+    // In lookup mode (or if the user cleared the search input) build a query
+    // from the result so the Spotify cross-search has something to work with.
+    const spotifyQuery =
+      mode === 'lookup' || !query.trim()
+        ? `${selected.artistName} ${selected.trackName}`
+        : query
 
+    const result = await setActiveTrack(selected, itemType, spotifyQuery)
     if (result.error) {
       toast.error(result.error)
     } else {
       toast.success(`Now featuring: ${selected.artistName} — ${selected.trackName}`)
       setQuery('')
+      setLinkUrl('')
       setResults([])
       setSelected(null)
     }
     setConfirming(false)
   }
 
+  const canLoadMore = mode === 'search' && results.length >= limit && limit < MAX_RESULTS
+
   return (
     <section className="mb-10">
       <h2 className="font-bold text-lg mb-4">Set New Track</h2>
 
+      {/* Mode toggle */}
       <div className="flex gap-4 mb-4">
-        {(['song', 'album'] as const).map((t) => (
+        {(['search', 'lookup'] as const).map((m) => (
           <button
-            key={t}
-            onClick={() => {
-              setItemType(t)
-              setResults([])
-              setSelected(null)
-              setSearchError('')
-            }}
+            key={m}
+            onClick={() => switchMode(m)}
             className={`text-sm font-bold pb-0.5 ${
-              itemType === t ? 'border-b-2 border-black' : 'text-gray-400'
+              mode === m ? 'border-b-2 border-black' : 'text-gray-400'
             }`}
           >
-            {t.charAt(0).toUpperCase() + t.slice(1)}
+            {m === 'search' ? 'Search' : 'Paste link'}
           </button>
         ))}
       </div>
 
-      <form onSubmit={handleSearch} className="flex gap-3 mb-4">
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={`Search for a ${itemType}...`}
-          required
-          className="border-b border-black outline-none py-2 text-base flex-1"
-        />
-        <button type="submit" disabled={searching} className="font-bold text-sm disabled:opacity-50 py-2 shrink-0 flex items-center gap-1.5">
-          {searching && <Spinner />}
-          {searching ? 'Searching' : 'Search'}
-        </button>
-      </form>
+      {mode === 'search' ? (
+        <>
+          <div className="flex gap-4 mb-4">
+            {(['song', 'album'] as const).map((t) => (
+              <button
+                key={t}
+                onClick={() => {
+                  setItemType(t)
+                  clearResults()
+                }}
+                className={`text-xs font-bold uppercase tracking-wider pb-0.5 ${
+                  itemType === t ? 'border-b border-black' : 'text-gray-400'
+                }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
 
-      {searchError && <p className="text-sm text-red-600 mb-3">{searchError}</p>}
+          <form onSubmit={handleSearch} className="flex gap-3 mb-4">
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={`Search for a ${itemType}...`}
+              required
+              className="border-b border-black outline-none py-2 text-base flex-1"
+            />
+            <button type="submit" disabled={searching} className="font-bold text-sm disabled:opacity-50 py-2 shrink-0 flex items-center gap-1.5">
+              {searching && <Spinner />}
+              {searching ? 'Searching' : 'Search'}
+            </button>
+          </form>
+        </>
+      ) : (
+        <form onSubmit={handleLookup} className="flex gap-3 mb-4">
+          <input
+            type="url"
+            value={linkUrl}
+            onChange={(e) => setLinkUrl(e.target.value)}
+            placeholder="https://music.apple.com/..."
+            required
+            className="border-b border-black outline-none py-2 text-base flex-1"
+            inputMode="url"
+            autoComplete="off"
+          />
+          <button type="submit" disabled={lookingUp} className="font-bold text-sm disabled:opacity-50 py-2 shrink-0 flex items-center gap-1.5">
+            {lookingUp && <Spinner />}
+            {lookingUp ? 'Looking up' : 'Look up'}
+          </button>
+        </form>
+      )}
+
+      {error && <p className="text-sm text-red-600 mb-3">{error}</p>}
 
       {results.length > 0 && (
         <div className="flex flex-col gap-2 mb-4">
