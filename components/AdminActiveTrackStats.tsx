@@ -21,6 +21,18 @@ export default function AdminActiveTrackStats({
   const [dislikes, setDislikes] = useState(initialDislikes)
   const [commentCount, setCommentCount] = useState(initialCommentCount)
 
+  // Resync local state whenever the active track changes. Without this the
+  // useState seeds stay frozen at the previous track's counts on a server
+  // re-render. We don't use `key` here because adding it caused a duplicated
+  // DOM node in practice — likely a Next.js refresh race between the server
+  // action's revalidatePath and the realtime router.refresh() running
+  // concurrently against a remounting subtree.
+  useEffect(() => {
+    setLikes(initialLikes)
+    setDislikes(initialDislikes)
+    setCommentCount(initialCommentCount)
+  }, [trackId, initialLikes, initialDislikes, initialCommentCount])
+
   // Single channel for reactions (UPDATE on tracks) and comment count (INSERT on
   // comments). Comments lacks REPLICA IDENTITY FULL so the server-side track_id
   // filter silently drops events; we filter client-side instead.
