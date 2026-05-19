@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, type RefObject } from 'react'
 import { Heart, MessageCircle, ThumbsDown } from 'lucide-react'
 import { likeTrack, unlikeTrack, dislikeTrack, undislikeTrack } from '@/actions/reactions'
 import { supabaseBrowser } from '@/lib/supabase/client'
@@ -25,6 +25,16 @@ export default function ReactionBar({ trackId, initialLikes, initialDislikes, co
   const [vote, setVote] = useState<VoteState>(null)
   // True while a user action is in flight — suppresses intermediate realtime events
   const pendingRef = useRef(false)
+  const heartRef = useRef<HTMLSpanElement>(null)
+  const thumbRef = useRef<HTMLSpanElement>(null)
+
+  function popIcon(ref: RefObject<HTMLSpanElement | null>, cls: string) {
+    const el = ref.current
+    if (!el) return
+    el.classList.remove(cls)
+    void el.offsetHeight
+    el.classList.add(cls)
+  }
 
   useEffect(() => {
     const stored = localStorage.getItem(VOTE_KEY)
@@ -100,6 +110,7 @@ export default function ReactionBar({ trackId, initialLikes, initialDislikes, co
         releasePending()
       }
     } else {
+      popIcon(heartRef, 'heart-pop')
       // Optimistic — all updates before any await
       if (vote === 'disliked') setDislikes((d) => d - 1)
       setLikes((l) => l + 1)
@@ -147,6 +158,7 @@ export default function ReactionBar({ trackId, initialLikes, initialDislikes, co
         releasePending()
       }
     } else {
+      popIcon(thumbRef, 'thumb-pop')
       // Optimistic — all updates before any await
       if (vote === 'liked') setLikes((l) => l - 1)
       setDislikes((d) => d + 1)
@@ -178,11 +190,13 @@ export default function ReactionBar({ trackId, initialLikes, initialDislikes, co
     <div className="flex gap-8 sm:gap-12 items-start">
       <button
         onClick={handleLike}
-        className="flex flex-col items-center gap-1 p-2 transition duration-150 ease-out active:scale-90"
+        className="flex flex-col items-center gap-1 p-2 transition duration-150 ease-out active:scale-90 hov:opacity-70"
         aria-label="Like"
         aria-pressed={vote === 'liked'}
       >
-        <Heart size={24} fill={vote === 'liked' ? 'red' : 'none'} stroke={vote === 'liked' ? 'red' : 'currentColor'} strokeWidth={vote === 'liked' ? 0 : 2} />
+        <span ref={heartRef} className="inline-flex">
+          <Heart size={24} fill={vote === 'liked' ? 'red' : 'none'} stroke={vote === 'liked' ? 'red' : 'currentColor'} strokeWidth={vote === 'liked' ? 0 : 2} />
+        </span>
         <NumberDisplay value={likes} className="text-sm" />
       </button>
 
@@ -193,11 +207,13 @@ export default function ReactionBar({ trackId, initialLikes, initialDislikes, co
 
       <button
         onClick={handleDislike}
-        className="flex flex-col items-center gap-1 p-2 transition duration-150 ease-out active:scale-90"
+        className="flex flex-col items-center gap-1 p-2 transition duration-150 ease-out active:scale-90 hov:opacity-70"
         aria-label="Dislike"
         aria-pressed={vote === 'disliked'}
       >
-        <ThumbsDown size={24} fill={vote === 'disliked' ? 'black' : 'none'} strokeWidth={vote === 'disliked' ? 0 : 2} />
+        <span ref={thumbRef} className="inline-flex">
+          <ThumbsDown size={24} fill={vote === 'disliked' ? 'black' : 'none'} strokeWidth={vote === 'disliked' ? 0 : 2} />
+        </span>
         <NumberDisplay value={dislikes} className="text-sm" />
       </button>
     </div>
