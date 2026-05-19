@@ -25,8 +25,11 @@ type ItunesRawResult = {
 export async function searchItunes(
   query: string,
   entity: 'song' | 'album',
+  limit = 10,
 ): Promise<ItunesResult[]> {
-  const url = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=${entity}&limit=5`
+  // iTunes caps limit at 200; we cap at 50 to keep responses snappy
+  const safeLimit = Math.min(Math.max(limit, 1), 50)
+  const url = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=${entity}&limit=${safeLimit}`
   const res = await fetch(url, { signal: AbortSignal.timeout(5000) })
   if (!res.ok) throw new Error(`iTunes API error: ${res.status}`)
 

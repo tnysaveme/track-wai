@@ -25,11 +25,12 @@ export type SearchTracksResult =
 export async function searchTracks(
   query: string,
   type: 'song' | 'album',
+  limit?: number,
 ): Promise<SearchTracksResult> {
   const trimmed = query.trim().slice(0, 200)
   if (!trimmed) return { error: 'Please enter a search term.' }
   try {
-    const results = await searchItunes(trimmed, type)
+    const results = await searchItunes(trimmed, type, limit)
     if (results.length === 0) return { error: 'No results found — try a different search term.' }
     return { results }
   } catch {
