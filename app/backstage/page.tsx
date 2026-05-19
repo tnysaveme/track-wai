@@ -56,6 +56,7 @@ export default async function BackstagePage() {
               </div>
             </div>
             <AdminActiveTrackStats
+              key={activeTrack.id}
               trackId={activeTrack.id}
               initialLikes={activeTrack.likes ?? 0}
               initialDislikes={activeTrack.dislikes ?? 0}
@@ -66,6 +67,7 @@ export default async function BackstagePage() {
               }
             />
             <ActiveTrackActions
+              key={activeTrack.id}
               trackId={activeTrack.id}
               trackName={activeTrack.itunes_track_name}
             />
