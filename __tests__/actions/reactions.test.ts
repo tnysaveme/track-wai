@@ -44,7 +44,7 @@ describe('likeTrack', () => {
   it('calls increment_likes with the correct track ID', async () => {
     mockRpc.mockResolvedValueOnce({ error: null })
     await likeTrack(TRACK_ID)
-    expect(mockRpc).toHaveBeenCalledWith('increment_likes', { track_id: TRACK_ID })
+    expect(mockRpc).toHaveBeenCalledWith('track_wai_increment_likes', { track_id: TRACK_ID })
   })
 
   it('returns empty object on success', async () => {
@@ -62,7 +62,7 @@ describe('unlikeTrack', () => {
   it('calls decrement_likes with the correct track ID', async () => {
     mockRpc.mockResolvedValueOnce({ error: null })
     await unlikeTrack(TRACK_ID)
-    expect(mockRpc).toHaveBeenCalledWith('decrement_likes', { track_id: TRACK_ID })
+    expect(mockRpc).toHaveBeenCalledWith('track_wai_decrement_likes', { track_id: TRACK_ID })
   })
 
   it('returns empty object on success', async () => {
@@ -80,7 +80,7 @@ describe('dislikeTrack', () => {
   it('calls increment_dislikes with the correct track ID', async () => {
     mockRpc.mockResolvedValueOnce({ error: null })
     await dislikeTrack(TRACK_ID)
-    expect(mockRpc).toHaveBeenCalledWith('increment_dislikes', { track_id: TRACK_ID })
+    expect(mockRpc).toHaveBeenCalledWith('track_wai_increment_dislikes', { track_id: TRACK_ID })
   })
 
   it('returns empty object on success', async () => {
@@ -98,7 +98,7 @@ describe('undislikeTrack', () => {
   it('calls decrement_dislikes with the correct track ID', async () => {
     mockRpc.mockResolvedValueOnce({ error: null })
     await undislikeTrack(TRACK_ID)
-    expect(mockRpc).toHaveBeenCalledWith('decrement_dislikes', { track_id: TRACK_ID })
+    expect(mockRpc).toHaveBeenCalledWith('track_wai_decrement_dislikes', { track_id: TRACK_ID })
   })
 
   it('returns empty object on success', async () => {

@@ -8,14 +8,14 @@ import { verifyAdminSession } from '@/actions/admin'
 
 async function signalTrackChange(eventType: string) {
   const supabase = createServiceClient()
-  const { error } = await supabase.from('track_events').insert({ event_type: eventType })
+  const { error } = await supabase.from('track_wai_track_events').insert({ event_type: eventType })
   if (error) {
     console.error('[signalTrackChange] insert failed — realtime signal not sent:', error)
     return
   }
   // Prune signals older than 1 hour — they're just notification triggers
   const cutoff = new Date(Date.now() - 60 * 60 * 1000).toISOString()
-  await supabase.from('track_events').delete().lt('created_at', cutoff)
+  await supabase.from('track_wai_track_events').delete().lt('created_at', cutoff)
 }
 
 export type SearchTracksResult =
@@ -92,7 +92,7 @@ export async function setActiveTrack(
     spotifyUrl = fallbackSpotifyUrl
   }
 
-  const { error } = await supabase.rpc('set_active_track', {
+  const { error } = await supabase.rpc('track_wai_set_active_track', {
     p_item_type: itemType,
     p_spotify_url: spotifyUrl,
     p_apple_music_url: itunesResult.appleMusicUrl ?? null,
@@ -120,7 +120,7 @@ export async function deactivateActiveTrack(trackId: string): Promise<{ error?: 
 
   const supabase = createServiceClient()
   const { error } = await supabase
-    .from('tracks')
+    .from('track_wai_tracks')
     .update({ is_active: false, deactivated_at: new Date().toISOString() })
     .eq('id', trackId)
     .eq('is_active', true)
@@ -142,7 +142,7 @@ export async function deleteTrack(trackId: string): Promise<{ error?: string }> 
   if (!trackId?.trim()) return { error: 'Invalid track ID.' }
 
   const supabase = createServiceClient()
-  const { error } = await supabase.from('tracks').delete().eq('id', trackId)
+  const { error } = await supabase.from('track_wai_tracks').delete().eq('id', trackId)
 
   if (error) {
     console.error('[deleteTrack] delete failed:', error)
@@ -161,7 +161,7 @@ export async function reactivateTrack(trackId: string): Promise<{ error?: string
   if (!trackId?.trim()) return { error: 'Invalid track ID.' }
 
   const supabase = createServiceClient()
-  const { error } = await supabase.rpc('reactivate_track', { p_track_id: trackId })
+  const { error } = await supabase.rpc('track_wai_reactivate_track', { p_track_id: trackId })
 
   if (error) {
     console.error('[reactivateTrack] rpc failed:', error)

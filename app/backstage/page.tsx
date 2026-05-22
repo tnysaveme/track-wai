@@ -14,13 +14,13 @@ export default async function BackstagePage() {
   const supabase = createServiceClient()
 
   const { data: activeTrack } = await supabase
-    .from('tracks')
+    .from('track_wai_tracks')
     .select('*, comments(count)')
     .eq('is_active', true)
     .single()
 
   const { data: history } = await supabase
-    .from('tracks')
+    .from('track_wai_tracks')
     .select('*, comments(count)')
     .eq('is_active', false)
     .order('deactivated_at', { ascending: false })

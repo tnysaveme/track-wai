@@ -38,7 +38,7 @@ export async function addComment(
 
   // Verify the track exists and is currently active before accepting the comment
   const { data: track, error: trackError } = await supabase
-    .from('tracks')
+    .from('track_wai_tracks')
     .select('id')
     .eq('id', trackId)
     .eq('is_active', true)
@@ -46,7 +46,7 @@ export async function addComment(
 
   if (trackError || !track) return { error: 'This track is no longer active.' }
 
-  const { error } = await supabase.from('comments').insert({
+  const { error } = await supabase.from('track_wai_comments').insert({
     track_id: trackId,
     author_name: cleanName,
     body: cleanBody,

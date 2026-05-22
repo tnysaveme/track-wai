@@ -11,7 +11,7 @@ export default async function CommentsPage() {
   const supabase = createServiceClient()
 
   const { data: track } = await supabase
-    .from('tracks')
+    .from('track_wai_tracks')
     .select('id')
     .eq('is_active', true)
     .single()
@@ -19,7 +19,7 @@ export default async function CommentsPage() {
   const initialComments = track
     ? ((
         await supabase
-          .from('comments')
+          .from('track_wai_comments')
           .select('id, author_name, body, created_at')
           .eq('track_id', track.id)
           .order('created_at', { ascending: false })

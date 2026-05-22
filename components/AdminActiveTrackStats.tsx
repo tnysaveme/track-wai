@@ -41,7 +41,7 @@ export default function AdminActiveTrackStats({
       .channel(`admin-track-${trackId}`)
       .on(
         'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'tracks', filter: `id=eq.${trackId}` },
+        { event: 'UPDATE', schema: 'public', table: 'track_wai_tracks', filter: `id=eq.${trackId}` },
         (payload) => {
           const updated = payload.new as { likes: number; dislikes: number }
           setLikes(updated.likes)
@@ -50,7 +50,7 @@ export default function AdminActiveTrackStats({
       )
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'comments' },
+        { event: 'INSERT', schema: 'public', table: 'track_wai_comments' },
         (payload) => {
           const row = payload.new as { track_id: string }
           if (row.track_id === trackId) setCommentCount((c) => c + 1)

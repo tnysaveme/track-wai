@@ -11,14 +11,14 @@ export default async function HomePage() {
   const supabase = createServiceClient()
 
   const { data: track } = await supabase
-    .from('tracks')
+    .from('track_wai_tracks')
     .select('*')
     .eq('is_active', true)
     .single()
 
   const commentCount = track
     ? ((await supabase
-        .from('comments')
+        .from('track_wai_comments')
         .select('id', { count: 'exact', head: true })
         .eq('track_id', track.id)).count ?? 0)
     : 0

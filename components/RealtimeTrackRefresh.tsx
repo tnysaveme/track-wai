@@ -22,7 +22,7 @@ export default function RealtimeTrackRefresh() {
     // to silently drop the UPDATE event before it reaches the client.
     const channel = supabaseBrowser
       .channel(CHANNEL_ID)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'track_events' }, refresh)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'track_wai_track_events' }, refresh)
       .subscribe()
 
     return () => {

@@ -52,7 +52,7 @@ beforeEach(() => {
 
   ;(createAnonClient as jest.Mock).mockReturnValue({
     from: (table: string) =>
-      table === 'tracks' ? tracksBuilder : { insert: mockInsert },
+      table === 'track_wai_tracks' ? tracksBuilder : { insert: mockInsert },
   })
 })
 

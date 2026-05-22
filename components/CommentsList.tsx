@@ -25,7 +25,7 @@ export default function CommentsList({ trackId, initialComments }: Props) {
       .channel(`comments-list-${trackId}`)
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'comments', filter: `track_id=eq.${trackId}` },
+        { event: 'INSERT', schema: 'public', table: 'track_wai_comments', filter: `track_id=eq.${trackId}` },
         (payload) => {
           const row = payload.new as Comment & { track_id: string }
           if (row.track_id !== trackId) return
